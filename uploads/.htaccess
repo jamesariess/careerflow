@@ -1,0 +1,14 @@
+# Block PHP execution in uploads
+<FilesMatch "\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Block directory listing
+Options -Indexes
+
+# Only allow safe file types
+<FilesMatch "\.(pdf|doc|docx)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
