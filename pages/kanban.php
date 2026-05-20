@@ -76,7 +76,7 @@ $colors = [
           <?php endif; ?>
           <?php if ($a['salary_min']): ?>
           <div style="font-size:11px;color:var(--accent2)">
-            <?= $a['salary_currency'] ?> <?= number_format($a['salary_min']/1000,0) ?>k<?= $a['salary_max'] ? '–'.number_format($a['salary_max']/1000,0).'k' : '+' ?>
+            <?= cf_currency((float)$a['salary_min'], true) ?><?= $a['salary_max'] ? '–'.cf_currency((float)$a['salary_max'],true) : '+' ?>
           </div>
           <?php endif; ?>
           <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center">

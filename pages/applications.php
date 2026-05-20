@@ -3,6 +3,7 @@ require_once '../components/layout.php';
 
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';
+$dbUser = DB::one('SELECT * FROM users WHERE id=?', [$uid]);
 
 // ── Handle POST actions ───────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'location' => trim($_POST['location'] ?? ''), 'job_type' => $_POST['job_type'] ?? 'Full-time',
                 'status' => $_POST['status'] ?? 'Applied', 'applied_date' => $_POST['applied_date'] ?: null,
                 'salary_min' => $_POST['salary_min'] ?: null, 'salary_max' => $_POST['salary_max'] ?: null,
-                'salary_currency' => $_POST['salary_currency'] ?? 'USD',
+                'salary_currency' => $dbUser['currency'] ?? 'USD',
                 'recruiter_name' => trim($_POST['recruiter_name'] ?? ''), 'recruiter_email' => trim($_POST['recruiter_email'] ?? ''),
                 'job_url' => trim($_POST['job_url'] ?? ''), 'job_description' => trim($_POST['job_description'] ?? ''),
                 'notes' => trim($_POST['notes'] ?? ''),
@@ -200,7 +201,7 @@ function statusBadge(string $s): string {
             <td style="font-size:12px;color:var(--muted)"><?= $a['applied_date'] ? date('M j, Y', strtotime($a['applied_date'])) : '—' ?></td>
             <td style="font-size:12px">
               <?php if ($a['salary_min']): ?>
-                <?= $a['salary_currency'] ?> <?= number_format($a['salary_min']/1000,0) ?>k<?= $a['salary_max'] ? '–'.number_format($a['salary_max']/1000,0).'k' : '+' ?>
+                <?= cf_currency((float)$a['salary_min'], true) ?><?= $a['salary_max'] ? '–'.cf_currency((float)$a['salary_max'],true) : '+' ?>
               <?php else: ?>—<?php endif; ?>
             </td>
             <td style="font-size:12px;color:var(--muted)"><?= htmlspecialchars($a['recruiter_name'] ?: '—') ?></td>
