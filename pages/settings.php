@@ -1,6 +1,7 @@
 <?php
 require_once '../components/layout.php';
 require_once '../includes/ai.php';
+require_once '../includes/security.php';
 cf_layout_head('Settings');
 cf_layout_sidebar('settings');
 
@@ -38,11 +39,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'update_ai') {
         $apiKey = trim($_POST['ai_api_key'] ?? '');
         $model  = trim($_POST['ai_model']   ?? 'mistralai/mistral-7b-instruct:free');
-        DB::run('UPDATE users SET ai_api_key=?, ai_model=? WHERE id=?', [$apiKey,$model,$uid]);
+        if ($apiKey) {
+            // New key provided — encrypt and save
+            $encKey = Security::encrypt($apiKey);
+            DB::run('UPDATE users SET ai_api_key=?, ai_model=? WHERE id=?', [$encKey,$model,$uid]);
+        } else {
+            // No new key — keep existing, just update model
+            DB::run('UPDATE users SET ai_model=? WHERE id=?', [$model,$uid]);
+        }
         $dbUser = DB::one('SELECT * FROM users WHERE id=?', [$uid]);
         log_activity($uid,'update_ai','AI settings updated');
         $msg = 'AI settings saved!'; $msgType = 'success';
     }
+    /* ── AJAX API key test (returns JSON) ── */
+    if ($action === 'test_ai_ajax') {
+        header('Content-Type: application/json');
+        $apiKey = trim($_POST['ai_api_key'] ?? $dbUser['ai_api_key'] ?? '');
+        $model  = trim($_POST['ai_model']   ?? $dbUser['ai_model']   ?? '');
+        if (!$apiKey) {
+            echo json_encode(['ok'=>false,'message'=>'Enter an API key first.']); exit;
+        }
+        // Decrypt if stored encrypted
+        $decrypted = Security::decrypt($apiKey);
+        if ($decrypted && $decrypted !== $apiKey) $apiKey = $decrypted;
+        $result = AI::testKey($apiKey, $model ?: 'mistralai/mistral-7b-instruct:free');
+        echo json_encode($result); exit;
+    }
+
     if ($action === 'test_ai') {
         $apiKey = trim($_POST['ai_api_key'] ?? $dbUser['ai_api_key'] ?? '');
         $model  = trim($_POST['ai_model']   ?? $dbUser['ai_model']   ?? '');
@@ -59,9 +82,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($gmailAddr && !filter_var($gmailAddr, FILTER_VALIDATE_EMAIL)) {
             $msg = 'Invalid Gmail address.'; $msgType = 'error';
         } else {
-            if ($gmailPass)
-                 DB::run('UPDATE users SET gmail_address=?, gmail_app_password=? WHERE id=?', [$gmailAddr,$gmailPass,$uid]);
-            else DB::run('UPDATE users SET gmail_address=? WHERE id=?', [$gmailAddr,$uid]);
+            if ($gmailPass) {
+                $encPass = Security::encrypt($gmailPass);
+                DB::run('UPDATE users SET gmail_address=?, gmail_app_password=? WHERE id=?', [$gmailAddr,$encPass,$uid]);
+            } else {
+                DB::run('UPDATE users SET gmail_address=? WHERE id=?', [$gmailAddr,$uid]);
+            }
             $dbUser = DB::one('SELECT * FROM users WHERE id=?', [$uid]);
             log_activity($uid,'update_gmail','Gmail settings updated');
             $msg = 'Gmail settings saved!'; $msgType = 'success';
@@ -211,7 +237,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
       </div>
       <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end">
         <a href="applications.php?export=csv" class="btn btn-secondary">⬇️ Export CSV</a>
-        <button type="submit" class="btn btn-primary">Save Profile</button>
+        <button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label">Save Profile</span></button>
       </div>
     </div>
   </form>
@@ -257,7 +283,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
         <?php endforeach; ?>
       </div>
       <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end">
-        <button type="submit" class="btn btn-primary">💾 Save Currency</button>
+        <button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label">💾 Save Currency</span></button>
       </div>
     </form>
   </div>
@@ -303,7 +329,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
         <input type="hidden" name="ai_model" id="selModel" value="<?= htmlspecialchars($selModel) ?>">
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <button type="submit" class="btn btn-primary">Save AI Settings</button>
+        <button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label">Save AI Settings</span></button>
         <button type="button" onclick="testAI()" class="btn btn-secondary" id="testBtn">🧪 Test Connection</button>
         <span id="testResult" style="font-size:13px;display:none;padding:7px 12px;border-radius:8px"></span>
       </div>
@@ -354,7 +380,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
         </div>
       </div>
       <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <button type="submit" class="btn btn-primary">Save Gmail Settings</button>
+        <button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label">Save Gmail Settings</span></button>
         <?php if(!empty($dbUser['gmail_address'])): ?>
         <a href="gmail.php" class="btn btn-secondary">📧 Open Gmail Inbox</a>
         <span style="font-size:12px;color:var(--success)">✓ <?= htmlspecialchars($dbUser['gmail_address']) ?></span>
@@ -388,7 +414,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
         <div><label class="cf-label">New Password</label><input type="password" name="new_password" class="cf-input" required placeholder="min 8 characters" id="newPw" oninput="checkPw()"></div>
         <div><label class="cf-label">Confirm New Password</label><input type="password" name="confirm_password" class="cf-input" required placeholder="••••••••" id="confPw" oninput="checkPw()"><p id="pwMsg" style="font-size:11px;margin-top:4px"></p></div>
       </div>
-      <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end"><button type="submit" class="btn btn-primary">Update Password</button></div>
+      <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:flex-end"><button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label">Update Password</span></button></div>
     </form>
   </div>
   <div class="ss"><h2>Sessions</h2><p class="sd">Sign out all active sessions across all devices.</p><a href="logout.php" class="btn btn-secondary">Sign Out All Sessions</a></div>
@@ -451,17 +477,42 @@ function selModel(mid){
   document.getElementById('selModel').value=mid;
 }
 
-// Test AI
+// Test AI - inline result, no redirect
 async function testAI(){
   const btn=document.getElementById('testBtn');
   const res=document.getElementById('testResult');
   btn.disabled=true; btn.textContent='⏳ Testing…';
   res.style.display='none';
-  const fd=new FormData(document.getElementById('aiForm'));
-  fd.set('_action','test_ai');
-  const r=await fetch('settings.php',{method:'POST',body:fd});
-  // Re-read the page for the flash message — simplest approach: reload with hash
-  location.href='settings.php#ai';
+  try {
+    const fd=new FormData(document.getElementById('aiForm'));
+    fd.set('_action','test_ai_ajax');
+    const r=await fetch('settings.php',{method:'POST',body:fd});
+    const j=await r.json();
+    res.style.display='inline-flex';
+    res.style.alignItems='center';
+    res.style.gap='6px';
+    if(j.ok){
+      res.style.background='rgba(34,197,94,.12)';
+      res.style.border='1px solid rgba(34,197,94,.25)';
+      res.style.color='#4ade80';
+      res.style.borderRadius='8px';
+      res.textContent='✓ ' + j.message;
+      showToast('AI connection successful!','success');
+    } else {
+      res.style.background='rgba(248,113,113,.12)';
+      res.style.border='1px solid rgba(248,113,113,.25)';
+      res.style.color='#f87171';
+      res.style.borderRadius='8px';
+      res.textContent='✕ ' + j.message;
+      showToast('API test failed: ' + j.message,'error');
+    }
+  } catch(e){
+    res.style.display='inline-flex';
+    res.textContent='✕ Network error';
+    res.style.color='#f87171';
+    showToast('Network error','error');
+  }
+  btn.disabled=false; btn.textContent='🧪 Test Connection';
 }
 
 // Password match

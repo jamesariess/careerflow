@@ -217,7 +217,7 @@ function statusBadge(string $s): string {
                   <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
                   <input type="hidden" name="_action" value="delete">
                   <input type="hidden" name="id" value="<?= $a['id'] ?>">
-                  <button type="submit" class="btn btn-danger btn-sm" style="padding:5px 10px">
+                  <button type="submit" class="btn btn-danger btn-sm" style="padding:5px 10px" onclick="cfBtnLoad(this,true)">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="1.8"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6M10 11v6M14 11v6M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
                   </button>
                 </form>
@@ -319,7 +319,7 @@ function statusBadge(string $s): string {
 
       <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)">
         <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary"><?= $editApp ? 'Save Changes' : 'Add Application' ?></button>
+        <button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label"><?= $editApp ? 'Save Changes' : 'Add Application' ?></span></button>
       </div>
     </form>
   </div>

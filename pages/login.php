@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/auth.php';
+require_once '../includes/security.php';
 session_init();
 
 // Redirect if already logged in
@@ -21,19 +22,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($pw) < 6) {
             $error = 'Please enter a valid email and password.';
         } else {
-            $user = DB::one('SELECT * FROM users WHERE email = ?', [$email]);
-            if ($user && verify_pw($pw, $user['password'])) {
-                login_user($user);
-                if ($remember) {
-                    $token = bin2hex(random_bytes(32));
-                    DB::run('UPDATE users SET remember_token=? WHERE id=?', [$token, $user['id']]);
-                    setcookie('cf_remember', $token, time() + SESSION_LIFETIME, '/', '', isset($_SERVER['HTTPS']), true);
-                }
-                log_activity($user['id'], 'login', 'User logged in');
-                header('Location: ' . APP_URL . '/pages/dashboard.php');
-                exit;
+            // Rate limiting: max 10 attempts per IP per 15 min
+            $ip = Security::clientIp();
+            if (!Security::checkRateLimit('login', $ip, 10, 900)) {
+                $error = 'Too many login attempts. Please wait 15 minutes and try again.';
             } else {
-                $error = 'Invalid email or password.';
+                $user = DB::one('SELECT * FROM users WHERE email = ?', [$email]);
+                if ($user && verify_pw($pw, $user['password'])) {
+                    Security::clearAttempts('login', $ip);
+                    login_user($user);
+                    if ($remember) {
+                        $token = bin2hex(random_bytes(32));
+                        DB::run('UPDATE users SET remember_token=? WHERE id=?', [$token, $user['id']]);
+                        setcookie('cf_remember', $token, time() + SESSION_LIFETIME, '/', '', isset($_SERVER['HTTPS']), true);
+                    }
+                    log_activity($user['id'], 'login', 'User logged in');
+                    header('Location: ' . APP_URL . '/pages/dashboard.php');
+                    exit;
+                } else {
+                    Security::recordAttempt('login', $ip);
+                    // Timing-safe: always same delay whether user exists or not
+                    usleep(300000);
+                    $error = 'Invalid email or password.';
+                }
             }
         }
     }
@@ -112,9 +123,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
   label { font-size:13px; color:rgba(255,255,255,0.55); font-weight:500; margin-bottom:6px; display:block; }
   .logo-dot { width:10px; height:10px; background: var(--accent); border-radius:50%; display:inline-block; margin-right:6px; }
+  /* Loading bar */
+  #cf-bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#6C63FF,#4ECDC4);z-index:9999;transition:width .25s ease,opacity .3s ease;box-shadow:0 0 10px #6C63FF;}
+  .btn-primary.loading{opacity:.75;pointer-events:none;}
+  .btn-primary.loading::after{content:'';display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;margin-left:8px;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
 </style>
 </head>
 <body>
+  <div id="cf-bar"></div>
+  <script>
+  // Progress bar
+  var bar=document.getElementById('cf-bar');
+  var prog=0,timer=null;
+  function startLoad(){
+    bar.style.opacity='1';bar.style.width='15%';prog=15;
+    timer=setInterval(function(){if(prog<80){prog+=Math.random()*4;bar.style.width=prog+'%';}},120);
+  }
+  function doneLoad(){
+    clearInterval(timer);bar.style.width='100%';
+    setTimeout(function(){bar.style.opacity='0';setTimeout(function(){bar.style.width='0';},300);},200);
+  }
+  // On form submit
+  document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('form').forEach(function(f){
+      f.addEventListener('submit',function(){
+        startLoad();
+        var btn=f.querySelector('button[type=submit]');
+        if(btn){btn.classList.add('loading');btn.textContent=btn.textContent.trim();}
+      });
+    });
+    // Links
+    document.querySelectorAll('a[href]').forEach(function(a){
+      a.addEventListener('click',function(e){
+        if(a.href&&!a.href.includes('#'))startLoad();
+      });
+    });
+    window.addEventListener('pageshow',function(){doneLoad();});
+    window.addEventListener('load',function(){doneLoad();});
+    window.addEventListener('beforeunload',function(){startLoad();});
+  });
+  </script>
+
   <div class="orb" style="width:400px;height:400px;background:#6C63FF;top:-100px;left:-80px;"></div>
   <div class="orb" style="width:300px;height:300px;background:#4ECDC4;bottom:-60px;right:-60px;"></div>
 

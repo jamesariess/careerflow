@@ -15,6 +15,7 @@
 // ============================================================
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/security.php';
 
 class AI {
     private static string $endpoint = 'https://openrouter.ai/api/v1/chat/completions';
@@ -29,7 +30,8 @@ class AI {
     ): string {
         // Load user's key + model
         $row = DB::one('SELECT ai_api_key, ai_model FROM users WHERE id=?', [$userId]);
-        $apiKey = trim($row['ai_api_key'] ?? '');
+        $rawKey = trim($row['ai_api_key'] ?? '');
+        $apiKey = Security::decrypt($rawKey) ?: $rawKey;
         $model  = trim($row['ai_model']  ?? '') ?: 'mistralai/mistral-7b-instruct:free';
 
         if (!$apiKey) {

@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/auth.php';
+require_once '../includes/security.php';
 session_init();
 if (auth_user()) { header('Location: ' . APP_URL . '/pages/dashboard.php'); exit; }
 
@@ -17,6 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         elseif (strlen($pw) < 8)                           $error = 'Password must be at least 8 characters.';
         elseif ($pw !== $pw2)                              $error = 'Passwords do not match.';
         else {
+            $ip = Security::clientIp();
+            if (!Security::checkRateLimit('register', $ip, 10, 3600)) {
+                $error = 'Too many registrations from this IP. Please try again later.';
+            } else {
+            Security::recordAttempt('register', $ip);
             $exists = DB::one('SELECT id FROM users WHERE email=?', [$email]);
             if ($exists) { $error = 'An account with this email already exists.'; }
             else {
@@ -26,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 log_activity($uid, 'register', 'Account created');
                 $success = 'Account created! You can now sign in.';
             }
+            } // rate limit else
         }
     }
 }
@@ -50,6 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .btn-primary:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 8px 24px rgba(108,99,255,.4);}
   label{font-size:13px;color:rgba(255,255,255,.55);font-weight:500;margin-bottom:6px;display:block;}
   .orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.25;pointer-events:none;z-index:0;}
+  #cf-bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#6C63FF,#4ECDC4);z-index:9999;transition:width .25s ease,opacity .3s ease;box-shadow:0 0 10px #6C63FF;}
+  .btn-primary.loading{opacity:.75;pointer-events:none;}
+  .btn-primary.loading::after{content:"";display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;margin-left:8px;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>

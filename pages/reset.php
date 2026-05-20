@@ -50,6 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .btn-primary{background:linear-gradient(135deg,#6C63FF,#9B5DE5);color:#fff;border:none;border-radius:10px;padding:13px;width:100%;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;}
   .btn-primary:hover{opacity:.88;}
   label{font-size:13px;color:rgba(255,255,255,.55);font-weight:500;margin-bottom:6px;display:block;}
+  #cf-bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#6C63FF,#4ECDC4);z-index:9999;transition:width .25s ease,opacity .3s ease;box-shadow:0 0 10px #6C63FF;}
+  .btn-primary.loading{opacity:.75;pointer-events:none;}
+  .btn-primary.loading::after{content:"";display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;margin-left:8px;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>

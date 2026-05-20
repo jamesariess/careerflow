@@ -216,9 +216,10 @@ $catColors = [
           <option value="14">Last 14 days</option>
           <option value="30">Last 30 days</option>
         </select>
-        <button type="submit" class="btn btn-primary btn-sm" <?= (!$hasGmail||!$hasAI)?'disabled title="Configure Gmail + AI in Settings first"':'' ?>>
+        <button type="submit" class="btn btn-primary btn-sm" <?= (!$hasGmail||!$hasAI)?'disabled title="Configure Gmail + AI in Settings first"':'' ?>
+          onclick="cfBtnLoad(this,true);setTimeout(()=>cfBtnLoad(this,false),60000)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 4v6h-6M1 20v-6h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
-          Sync Gmail
+          <span class="btn-label">Sync Gmail</span>
         </button>
       </form>
       <a href="settings.php" class="btn btn-secondary btn-sm">⚙️ Settings</a>

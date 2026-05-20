@@ -15,6 +15,7 @@
 // ============================================================
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/security.php';
 require_once __DIR__ . '/ai.php';
 
 class GmailSync {
@@ -32,7 +33,8 @@ class GmailSync {
         if (!$row) throw new RuntimeException('User not found.');
         $this->userRow     = $row;
         $this->address     = trim($row['gmail_address']   ?? '');
-        $this->appPassword = trim($row['gmail_app_password'] ?? '');
+        $rawPass           = trim($row['gmail_app_password'] ?? '');
+        $this->appPassword = Security::decrypt($rawPass) ?: $rawPass;
         if (!$this->address || !$this->appPassword) {
             throw new RuntimeException('Gmail credentials not configured. Add them in Settings → AI & Integrations.');
         }
@@ -189,7 +191,8 @@ class GmailSync {
 
         $userRow  = DB::one('SELECT * FROM users WHERE id=?', [$userId]);
         $gmail    = $userRow['gmail_address']      ?? '';
-        $appPass  = $userRow['gmail_app_password'] ?? '';
+        $rawPass  = $userRow['gmail_app_password'] ?? '';
+        $appPass  = Security::decrypt($rawPass) ?: $rawPass;
         $fromName = $userRow['name']               ?? '';
 
         if (!$gmail || !$appPass) throw new RuntimeException('Gmail credentials not configured.');

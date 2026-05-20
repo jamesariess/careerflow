@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/auth.php';
+require_once '../includes/security.php';
 session_init();
 if (auth_user()) { header('Location: ' . APP_URL . '/pages/dashboard.php'); exit; }
 
@@ -12,6 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $msg = 'Please enter a valid email address.'; $msgType = 'error';
         } else {
+            $ip = Security::clientIp();
+            if (!Security::checkRateLimit('reset', $ip, 5, 3600)) {
+                $msg = 'Too many requests. Try again in an hour.'; $msgType = 'error';
+            } else {
+                Security::recordAttempt('reset', $ip);
             $user = DB::one('SELECT id FROM users WHERE email=?', [$email]);
             /* Always show success to prevent user enumeration */
             $msg = 'If an account exists for that email, a reset link has been sent.';
@@ -50,6 +56,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .btn-primary:hover{opacity:.88;transform:translateY(-1px);}
   label{font-size:13px;color:rgba(255,255,255,.55);font-weight:500;margin-bottom:6px;display:block;}
   .orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.2;pointer-events:none;z-index:0;}
+  #cf-bar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,#6C63FF,#4ECDC4);z-index:9999;transition:width .25s ease,opacity .3s ease;box-shadow:0 0 10px #6C63FF;}
+  .btn-primary.loading{opacity:.75;pointer-events:none;}
+  .btn-primary.loading::after{content:"";display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;margin-left:8px;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
