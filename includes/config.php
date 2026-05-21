@@ -9,10 +9,11 @@ define('CF_UPLOAD_DIR', CF_ROOT . '/uploads/resumes/');
 define('CF_UPLOAD_MAX_MB', 5);
 
 // ── Database ─────────────────────────────────────────────────
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'careerflow');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// ── Database ─────────────────────────────────────────────────
+define('DB_HOST', 'sql.freedb.tech');
+define('DB_NAME', 'freedb_XKQYArv0'); // put your full database name
+define('DB_USER', 'u_KlZNhp');
+define('DB_PASS', 'ujCtPPyUM27k');
 define('DB_CHARSET', 'utf8mb4');
 
 // ── Session ───────────────────────────────────────────────────
