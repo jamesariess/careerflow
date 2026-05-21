@@ -2,6 +2,7 @@
 require_once '../components/layout.php';
 cf_layout_head('Resumes');
 cf_layout_sidebar('resumes');
+?>
 
 <style>
 @media (max-width: 768px) {
@@ -33,7 +34,7 @@ cf_layout_sidebar('resumes');
   }
 }
 </style>
-
+<?php
 
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';

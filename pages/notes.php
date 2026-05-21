@@ -3,36 +3,6 @@ require_once '../components/layout.php';
 cf_layout_head('Notes');
 cf_layout_sidebar('notes');
 
-<style>
-@media (max-width: 768px) {
-  /* Force all modal form grids to single column */
-  .modal-box .rg-2,
-  .modal-box [style*="grid-template-columns:1fr 1fr"],
-  .modal-box [style*="grid-template-columns: 1fr 1fr"],
-  .modal-box [style*="grid-template-columns:1fr 2fr"],
-  .modal-box [style*="grid-template-columns:2fr 1fr"] {
-    grid-template-columns: 1fr !important;
-  }
-  .modal-box [style*="grid-column:1/-1"] {
-    grid-column: 1 !important;
-  }
-  /* Inputs inside modal — prevent iOS zoom */
-  .modal-box input, .modal-box select, .modal-box textarea {
-    font-size: 16px !important;
-  }
-  /* Modal action buttons — full width stack */
-  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
-  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
-    flex-direction: column !important;
-    gap: 8px !important;
-  }
-  .modal-box [style*="justify-content:flex-end"] .btn,
-  .modal-box [style*="justify-content: flex-end"] .btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-}
-</style>
 
 
 $uid = (int)$user['id'];
@@ -133,6 +103,36 @@ $typeBg = [
 <?php if ($msg): ?>
 <script>document.addEventListener('DOMContentLoaded',()=>showToast('<?= addslashes($msg) ?>','<?= $msgType ?>'));</script>
 <?php endif; ?>
+<style>
+@media (max-width: 768px) {
+  /* Force all modal form grids to single column */
+  .modal-box .rg-2,
+  .modal-box [style*="grid-template-columns:1fr 1fr"],
+  .modal-box [style*="grid-template-columns: 1fr 1fr"],
+  .modal-box [style*="grid-template-columns:1fr 2fr"],
+  .modal-box [style*="grid-template-columns:2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-box [style*="grid-column:1/-1"] {
+    grid-column: 1 !important;
+  }
+  /* Inputs inside modal — prevent iOS zoom */
+  .modal-box input, .modal-box select, .modal-box textarea {
+    font-size: 16px !important;
+  }
+  /* Modal action buttons — full width stack */
+  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
+  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .modal-box [style*="justify-content:flex-end"] .btn,
+  .modal-box [style*="justify-content: flex-end"] .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+</style>
 
 <div style="max-width:1100px">
 

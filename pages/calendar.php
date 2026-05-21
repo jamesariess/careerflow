@@ -2,7 +2,7 @@
 require_once '../components/layout.php';
 cf_layout_head('Calendar');
 cf_layout_sidebar('calendar');
-
+?>
 <style>
 @media (max-width: 768px) {
   /* Force all modal form grids to single column */
@@ -34,7 +34,7 @@ cf_layout_sidebar('calendar');
 }
 </style>
 
-
+<?php
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';
 

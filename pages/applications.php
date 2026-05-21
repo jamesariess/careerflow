@@ -100,18 +100,7 @@ $openModal = isset($_GET['new']) || $editApp;
 cf_layout_head('Applications');
 cf_layout_sidebar('applications');
 
-<style>
-/* ── Applications modal: mobile form fix ── */
-@media (max-width: 768px) {
-  #appModal .modal-box { padding: 16px 14px !important; }
-  #appModal .rg-2 { grid-template-columns: 1fr !important; }
-  #appModal [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
-  #appModal [style*="grid-column:1/-1"] { grid-column: 1 !important; }
-  #appModal textarea { min-height: 80px; }
-  /* salary row side by side even on mobile */
-  #appModal .salary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-}
-</style>
+
 
 
 function statusBadge(string $s): string {
@@ -129,7 +118,18 @@ function statusBadge(string $s): string {
 <?php if ($msg): ?>
 <script>document.addEventListener('DOMContentLoaded',()=>showToast('<?= addslashes($msg) ?>','<?= $msgType ?>'));</script>
 <?php endif; ?>
-
+<style>
+/* ── Applications modal: mobile form fix ── */
+@media (max-width: 768px) {
+  #appModal .modal-box { padding: 16px 14px !important; }
+  #appModal .rg-2 { grid-template-columns: 1fr !important; }
+  #appModal [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  #appModal [style*="grid-column:1/-1"] { grid-column: 1 !important; }
+  #appModal textarea { min-height: 80px; }
+  /* salary row side by side even on mobile */
+  #appModal .salary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+</style>
 <div style="max-width:1280px">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6 page-header">
