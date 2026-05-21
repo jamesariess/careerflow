@@ -112,7 +112,7 @@ $rejected    = $app['status'] === 'Rejected';
 <div style="max-width:1100px">
 
   <!-- Breadcrumb -->
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:18px;font-size:13px;color:var(--muted)">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:13px;color:var(--muted);flex-wrap:wrap">
     <a href="applications.php" style="color:var(--accent);text-decoration:none">Applications</a>
     <span>›</span>
     <span style="color:#fff"><?= htmlspecialchars($app['company']) ?></span>
@@ -123,7 +123,7 @@ $rejected    = $app['status'] === 'Rejected';
 
   <!-- ── Hero card ── -->
   <div class="detail-card" style="margin-bottom:18px">
-    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px">
       <div style="flex:1;min-width:0">
         <!-- Company logo placeholder -->
         <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
@@ -216,7 +216,7 @@ $rejected    = $app['status'] === 'Rejected';
   <?php endif; ?>
 
   <!-- ── Main two-column layout ── -->
-  <div style="display:grid;grid-template-columns:1fr 340px;gap:16px">
+  <div class="rg-2">
 
     <!-- LEFT column -->
     <div>

@@ -196,7 +196,7 @@ $catColors = [
 <div style="max-width:1280px">
 
   <!-- ── Header ── -->
-  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px">
+  <div class="page-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px">
     <div>
       <h1 style="font-size:22px;font-weight:700;color:#fff">Gmail Inbox</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px">
@@ -243,7 +243,7 @@ $catColors = [
   <?php endif; ?>
 
   <!-- ── Stats row ── -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px">
+  <div class="rg-4" style="margin-bottom:18px">
     <?php foreach ([
       ['Total Emails',    $counts['total']       ?? 0, '#6C63FF'],
       ['Job-Related',     $counts['job_related']  ?? 0, '#4ECDC4'],
@@ -257,7 +257,7 @@ $catColors = [
     <?php endforeach; ?>
   </div>
 
-  <div style="display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start">
+  <div class="rg-sidebar">
 
     <!-- ── Left filter sidebar ── -->
     <div class="card" style="padding:12px">

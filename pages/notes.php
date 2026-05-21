@@ -105,7 +105,7 @@ $typeBg = [
 <div style="max-width:1100px">
 
   <!-- ── Page header ── -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 page-header">
     <div>
       <h1 style="font-size:22px;font-weight:700;color:#fff">Notes &amp; Reminders</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px"><?= count($notes) ?> note<?= count($notes) !== 1 ? 's' : '' ?></p>
@@ -122,13 +122,13 @@ $typeBg = [
     </div>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start">
+  <div class="rg-31">
 
     <!-- ── Left: notes list ── -->
     <div>
       <!-- Filters bar -->
       <div class="card" style="padding:12px 16px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
-        <form method="GET" style="display:contents">
+        <form method="GET" class="filter-bar" style="display:flex;flex-wrap:wrap;gap:8px;flex:1">
           <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search notes…" class="cf-input" style="width:180px;padding:7px 12px;font-size:13px">
           <select name="app" class="cf-input" style="width:180px;padding:7px 12px;font-size:13px">
             <option value="">All Applications</option>

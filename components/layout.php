@@ -45,8 +45,12 @@ function cf_layout_head(string $title = 'CareerFlow'): void {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title><?= htmlspecialchars($title) ?> – CareerFlow</title>
+<meta name="theme-color" content="#0D0D14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -453,11 +457,73 @@ select.cf-input option { background: #1a1a28; }
 .kanban-drop { min-height: 60px; }
 
 /* ── Responsive ──────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  #sidebar { transform: translateX(-100%); }
-  #sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,.5); }
-  #topbar { left: 0; }
-  #main-content { margin-left: 0; padding: 16px; }
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE GRID HELPERS
+   ══════════════════════════════════════════════════════════════ */
+/* Use these classes on grid wrappers instead of inline styles */
+.rg-2   { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+.rg-3   { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.rg-4   { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.rg-21  { display:grid; grid-template-columns:2fr 1fr; gap:16px; }
+.rg-31  { display:grid; grid-template-columns:3fr 1fr; gap:16px; }
+.rg-12  { display:grid; grid-template-columns:1fr 2fr; gap:16px; }
+.rg-auto{ display:grid; grid-template-columns:repeat(auto-fill,minmax(175px,1fr)); gap:14px; }
+.rg-sidebar { display:grid; grid-template-columns:220px 1fr; gap:16px; align-items:start; }
+
+/* ── Bottom nav (mobile only — hidden on desktop) ─────────────── */
+#cf-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 64px;
+  background: rgba(15,15,24,.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  z-index: 60;
+  padding: 0 4px;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+.cf-bnav-items {
+  display: flex; align-items: center; justify-content: space-around;
+  height: 100%;
+}
+.cf-bnav-item {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; flex: 1; padding: 8px 4px;
+  color: rgba(255,255,255,.4); font-size: 9px; font-weight: 600;
+  text-decoration: none; text-transform: uppercase; letter-spacing: .4px;
+  border-radius: 10px; transition: color .18s, background .18s;
+  cursor: pointer; position: relative;
+}
+.cf-bnav-item.active { color: var(--accent); }
+.cf-bnav-item:active { background: rgba(108,99,255,.12); }
+.cf-bnav-item svg   { width: 22px; height: 22px; flex-shrink: 0; }
+.cf-bnav-dot {
+  position: absolute; top: 6px; right: calc(50% - 14px);
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--danger); border: 2px solid var(--bg);
+}
+/* FAB (Floating Action Button) for Add Job on mobile */
+#cf-fab {
+  display: none;
+  position: fixed; bottom: 80px; right: 20px;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #9B5DE5);
+  box-shadow: 0 4px 20px rgba(108,99,255,.5);
+  align-items: center; justify-content: center;
+  z-index: 59; cursor: pointer; border: none;
+  transition: transform .2s, box-shadow .2s;
+  text-decoration: none;
+}
+#cf-fab:active { transform: scale(.92); box-shadow: 0 2px 12px rgba(108,99,255,.4); }
+
+/* Sidebar overlay (tap outside to close) */
+#cf-sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 49;
+  backdrop-filter: blur(2px);
 }
 
 /* ── Utility ─────────────────────────────────────────────────── */
@@ -466,6 +532,159 @@ select.cf-input option { background: #1a1a28; }
 .justify-between { justify-content: space-between; }
 .gap-3 { gap: 12px; }
 .text-center { text-align: center; }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE — ≤ 768px
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  :root { --topbar-h: 56px; }
+
+  /* Sidebar slides in from left */
+  #sidebar { transform: translateX(-110%); transition: transform .3s cubic-bezier(.4,0,.2,1); }
+  #sidebar.open { transform: translateX(0); box-shadow: 6px 0 30px rgba(0,0,0,.6); }
+  #cf-sidebar-overlay { display: block; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  #cf-sidebar-overlay.open { opacity: 1; pointer-events: all; }
+
+  /* Topbar: full width */
+  #topbar { left: 0; padding: 0 14px; }
+  /* Hide search box — replaced by search icon */
+  .search-box { display: none !important; }
+  /* Hide desktop Add Job button in topbar */
+  #btn-add-job { display: none !important; }
+
+  /* Main content */
+  #main-content {
+    margin-left: 0;
+    padding: 14px 14px 80px; /* bottom pad for bottom nav */
+    animation: cf-page-in .3s ease forwards;
+  }
+
+  /* Show bottom nav + FAB */
+  #cf-bottom-nav { display: flex; }
+  #cf-fab { display: flex; }
+
+  /* ── Grid collapse ── */
+  .rg-2, .rg-21, .rg-31, .rg-12 { grid-template-columns: 1fr !important; }
+  .rg-3  { grid-template-columns: repeat(2,1fr) !important; }
+  .rg-4  { grid-template-columns: repeat(2,1fr) !important; }
+  .rg-sidebar { grid-template-columns: 1fr !important; }
+
+  /* Inline style grids — override via class additions where possible */
+  /* Catch-all: any 2-column grid inside main content */
+  #main-content [style*="grid-template-columns:1fr 1fr"],
+  #main-content [style*="grid-template-columns: 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  #main-content [style*="grid-template-columns:2fr 1fr"],
+  #main-content [style*="grid-template-columns: 2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  #main-content [style*="grid-template-columns:repeat(4,1fr)"],
+  #main-content [style*="grid-template-columns: repeat(4,1fr)"] {
+    grid-template-columns: repeat(2,1fr) !important;
+  }
+  #main-content [style*="grid-template-columns:1fr 320px"],
+  #main-content [style*="grid-template-columns:1fr 340px"],
+  #main-content [style*="grid-template-columns:200px 1fr"],
+  #main-content [style*="grid-template-columns:220px 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  /* stat card auto-fill: 2 cols on phone */
+  #main-content [style*="minmax(175px,1fr)"],
+  #main-content [style*="minmax(180px,1fr)"] {
+    grid-template-columns: repeat(2,1fr) !important;
+  }
+
+  /* Tables — horizontal scroll */
+  .cf-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .cf-table { min-width: 600px; }
+  /* Hide less important columns */
+  .cf-table .hide-mobile { display: none !important; }
+
+  /* Cards */
+  .stat-card { padding: 14px 16px; }
+  .stat-card > div:first-child span { font-size: 9px; }
+
+  /* Modal: full-screen on phone */
+  .modal-box {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 92vh !important;
+    padding: 20px 18px !important;
+  }
+  .modal-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .modal-overlay.open .modal-box {
+    transform: scale(1) translateY(0) !important;
+  }
+
+  /* Forms: inputs full-width */
+  .cf-input { font-size: 16px !important; } /* prevents iOS zoom */
+  select.cf-input { font-size: 16px !important; }
+
+  /* Filter bars: stack vertically */
+  .filter-bar { flex-direction: column !important; }
+  .filter-bar .cf-input { width: 100% !important; }
+
+  /* Kanban: show 1 column at a time, horizontal scroll */
+  .kanban-board { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .kanban-col   { min-width: 260px !important; width: 260px !important; }
+
+  /* Page headers: stack */
+  .page-header { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+  .page-header .btn { width: 100%; justify-content: center; }
+
+  /* Timeline: smaller text */
+  .timeline-label { font-size: 7px !important; }
+  .timeline-dot   { width: 20px !important; height: 20px !important; font-size: 9px !important; }
+
+  /* Topbar right side — show only icons */
+  #topbar .topbar-right-text { display: none; }
+
+  /* Detail sidebar: order — main content first */
+  .detail-sidebar { order: -1; }
+
+  /* Settings tabs: horizontal scroll */
+  #settingsTabs, [id^="tab-"] ~ [id^="tab-"] { overflow-x: auto; }
+  .tab-btn { padding: 8px 12px; font-size: 12px; white-space: nowrap; }
+
+  /* Cover letter grid */
+  #main-content [style*="grid-template-columns:repeat(auto-fill,minmax(300px"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Analytics funnel bars */
+  .funnel-bar { min-width: 0 !important; }
+
+  /* Chart wrappers: slightly shorter on mobile */
+  [style*="height:220px"], [style*="height:240px"] {
+    height: 180px !important;
+  }
+  [style*="height:200px"] {
+    height: 160px !important;
+  }
+}
+
+/* ── Small phones ≤ 380px ─────────────────────────────────────── */
+@media (max-width: 380px) {
+  #main-content { padding: 10px 10px 80px; }
+  .rg-4, .rg-3 { grid-template-columns: 1fr !important; }
+  #main-content [style*="grid-template-columns:repeat(4,1fr)"] { grid-template-columns: 1fr !important; }
+  #main-content [style*="minmax(175px"] { grid-template-columns: 1fr !important; }
+  .stat-card > div:last-child { font-size: 22px !important; }
+}
+
+/* ── Tablet ≤ 1024px ─────────────────────────────────────────── */
+@media (max-width: 1024px) and (min-width: 769px) {
+  :root { --sidebar-w: 200px; }
+  #main-content { padding: 20px; }
+  .rg-4   { grid-template-columns: repeat(2,1fr) !important; }
+  #main-content [style*="grid-template-columns:repeat(4,1fr)"] { grid-template-columns: repeat(2,1fr) !important; }
+}
 </style>
 </head>
 <?php }
@@ -569,7 +788,7 @@ function cf_layout_sidebar(string $active = ''): void {
     <!-- ── Topbar ── -->
     <header id="topbar">
       <div style="display:flex;align-items:center;gap:10px">
-        <button onclick="document.getElementById('sidebar').classList.toggle('open')"
+        <button onclick="toggleSidebar()"
                 class="icon-btn" style="display:none" id="menu-btn">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
             <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -612,6 +831,43 @@ function cf_layout_sidebar(string $active = ''): void {
       </div>
     </header>
 
+    <!-- Sidebar overlay (mobile tap-outside) -->
+    <div id="cf-sidebar-overlay" onclick="closeSidebar()"></div>
+
+    <!-- Bottom navigation (mobile) -->
+    <nav id="cf-bottom-nav">
+      <div class="cf-bnav-items">
+        <a href="<?= APP_URL ?>/pages/dashboard.php" class="cf-bnav-item <?= $active==='dashboard'?'active':'' ?>">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" stroke="currentColor" stroke-width="1.6"/></svg>
+          Home
+        </a>
+        <a href="<?= APP_URL ?>/pages/applications.php" class="cf-bnav-item <?= $active==='applications'?'active':'' ?>">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="currentColor" stroke-width="1.6"/></svg>
+          Jobs
+        </a>
+        <a href="<?= APP_URL ?>/pages/gmail.php" class="cf-bnav-item <?= $active==='gmail'?'active':'' ?>">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.6"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.6"/></svg>
+          Mail
+          <?php if ($gmailUnread > 0): ?><span class="cf-bnav-dot"></span><?php endif; ?>
+        </a>
+        <a href="<?= APP_URL ?>/pages/kanban.php" class="cf-bnav-item <?= $active==='kanban'?'active':'' ?>">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3h9v18h-9M3 3h7v18H3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Board
+        </a>
+        <a href="<?= APP_URL ?>/pages/settings.php" class="cf-bnav-item <?= $active==='settings'?'active':'' ?>">
+          <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="1.6"/></svg>
+          More
+        </a>
+      </div>
+    </nav>
+
+    <!-- FAB: Add Job (mobile only) -->
+    <a href="<?= APP_URL ?>/pages/applications.php?new=1" id="cf-fab" title="Add Job Application">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+    </a>
+
     <main id="main-content">
 
     <script>
@@ -619,10 +875,39 @@ function cf_layout_sidebar(string $active = ''): void {
     // CareerFlow – Global JS (loading, security, utilities)
     // ══════════════════════════════════════════════════════════════
 
-    // ── Mobile menu ───────────────────────────────────────────────
-    if (window.innerWidth <= 768) {
+    // ── Mobile setup ─────────────────────────────────────────────
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
         document.getElementById('menu-btn').style.display = 'flex';
     }
+
+    function toggleSidebar() {
+        const sb  = document.getElementById('sidebar');
+        const ov  = document.getElementById('cf-sidebar-overlay');
+        const open = sb.classList.toggle('open');
+        ov.classList.toggle('open', open);
+        // Prevent body scroll when sidebar open
+        document.body.style.overflow = open ? 'hidden' : '';
+    }
+    function closeSidebar() {
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('cf-sidebar-overlay').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    // Close sidebar on nav-link tap (mobile)
+    document.querySelectorAll('.nav-link').forEach(a => {
+        a.addEventListener('click', function() {
+            if (window.innerWidth <= 768) closeSidebar();
+        });
+    });
+    // Close on Escape
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closeSidebar();
+            // Also close modals
+            document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+        }
+    });
 
     // ── Progress bar engine ───────────────────────────────────────
     const CfProgress = (() => {

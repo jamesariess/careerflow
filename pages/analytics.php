@@ -47,7 +47,7 @@ $hireRate  = $total > 0 ? round($hired/$total*100) : 0;
 ?>
 
 <div style="max-width:1200px">
-  <div class="flex items-center justify-between mb-7">
+  <div class="flex items-center justify-between mb-7 page-header">
     <div>
       <h1 style="font-size:22px;font-weight:700;color:#fff">Analytics</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px">Insights across <?= $total ?> application<?= $total!==1?'s':'' ?></p>
@@ -55,7 +55,7 @@ $hireRate  = $total > 0 ? round($hired/$total*100) : 0;
   </div>
 
   <!-- Key metrics -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px">
+  <div class="rg-4" style="margin-bottom:24px">
     <?php foreach ([
       ['Total Applications', $total,      '#6C63FF', '100%'],
       ['Interview Rate',     $ivRate.'%', '#4ECDC4', "$interviews reached interview"],
@@ -71,7 +71,7 @@ $hireRate  = $total > 0 ? round($hired/$total*100) : 0;
   </div>
 
   <!-- Salary row -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px">
+  <div class="rg-2" style="margin-bottom:24px">
     <div class="stat-card" style="display:flex;align-items:center;gap:14px">
       <div style="width:42px;height:42px;border-radius:10px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px">💰</div>
       <div>
@@ -89,7 +89,7 @@ $hireRate  = $total > 0 ? round($hired/$total*100) : 0;
   </div>
 
   <!-- Chart row 1 — FIXED heights -->
-  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px">
+  <div class="rg-21" style="margin-bottom:16px">
     <div class="card" style="padding:22px">
       <h3 style="font-size:15px;font-weight:700;color:#fff;margin-bottom:18px">Applications &amp; Interviews Over Time</h3>
       <div style="position:relative;height:220px;width:100%">
@@ -105,7 +105,7 @@ $hireRate  = $total > 0 ? round($hired/$total*100) : 0;
   </div>
 
   <!-- Chart row 2 -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div class="rg-2">
     <div class="card" style="padding:22px">
       <h3 style="font-size:15px;font-weight:700;color:#fff;margin-bottom:18px">Top Companies Applied To</h3>
       <div style="position:relative;height:240px;width:100%">

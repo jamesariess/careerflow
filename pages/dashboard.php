@@ -56,7 +56,7 @@ $upcoming = DB::all("SELECT i.*, a.company, a.job_title FROM interviews i
 <div style="max-width:1200px">
 
   <!-- Page header -->
-  <div class="flex items-center justify-between mb-7">
+  <div class="flex items-center justify-between mb-7 page-header">
     <div>
       <h1 style="font-size:24px;font-weight:700;color:#fff">
         Good <?= date('G') < 12 ? 'morning' : (date('G') < 17 ? 'afternoon' : 'evening') ?>,
@@ -73,7 +73,7 @@ $upcoming = DB::all("SELECT i.*, a.company, a.job_title FROM interviews i
   </div>
 
   <!-- Stat cards -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:14px;margin-bottom:24px">
+  <div class="rg-auto" style="margin-bottom:24px">
     <?php
     $cards = [
       ['Total Applied',  $stats['total'],       '#6C63FF', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
@@ -100,7 +100,7 @@ $upcoming = DB::all("SELECT i.*, a.company, a.job_title FROM interviews i
   </div>
 
   <!-- Charts row — FIXED HEIGHT WRAPPERS prevent infinite expand -->
-  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px">
+  <div class="rg-21" style="margin-bottom:24px">
 
     <!-- Monthly bar chart -->
     <div class="card" style="padding:22px">
@@ -124,7 +124,7 @@ $upcoming = DB::all("SELECT i.*, a.company, a.job_title FROM interviews i
   </div>
 
   <!-- Bottom row -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <div class="rg-2">
 
     <!-- Upcoming interviews -->
     <div class="card">

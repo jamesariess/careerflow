@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Sign In – CareerFlow</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -128,6 +128,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   .btn-primary.loading{opacity:.75;pointer-events:none;}
   .btn-primary.loading::after{content:'';display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;margin-left:8px;vertical-align:middle;}
   @keyframes spin{to{transform:rotate(360deg)}}
+
+
+  /* Mobile responsive */
+  @media (max-width: 480px) {
+    .glass-card { padding: 28px 20px !important; margin: 12px !important; }
+    h2 { font-size: 20px !important; }
+    .orb { display: none; }
+  }
 
 </style>
 </head>

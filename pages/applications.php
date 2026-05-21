@@ -118,7 +118,7 @@ function statusBadge(string $s): string {
 
 <div style="max-width:1280px">
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 page-header">
     <div>
       <h1 style="font-size:22px;font-weight:700;color:#fff">Applications</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px"><?= count($apps) ?> result<?= count($apps) !== 1 ? 's' : '' ?></p>
@@ -136,7 +136,7 @@ function statusBadge(string $s): string {
   </div>
 
   <!-- Filters -->
-  <div class="card" style="padding:14px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+  <div class="card filter-bar" style="padding:14px 18px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
     <form method="GET" style="display:contents">
       <input type="text" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Search…" class="cf-input" style="width:200px;padding:8px 12px">
       <select name="status" class="cf-input" style="width:150px;padding:8px 12px">
@@ -164,17 +164,17 @@ function statusBadge(string $s): string {
 
   <!-- Table -->
   <div class="card" style="overflow:hidden">
-    <div style="overflow-x:auto">
+    <div class="cf-table-wrap">
       <table class="cf-table">
         <thead>
           <tr>
             <th>Company / Role</th>
             <th>Status</th>
-            <th>Type</th>
-            <th>Location</th>
+            <th class="hide-mobile">Type</th>
+            <th class="hide-mobile">Location</th>
             <th>Applied</th>
-            <th>Salary</th>
-            <th>Recruiter</th>
+            <th class="hide-mobile">Salary</th>
+            <th class="hide-mobile">Recruiter</th>
             <th style="text-align:right">Actions</th>
           </tr>
         </thead>
@@ -196,15 +196,15 @@ function statusBadge(string $s): string {
                 <?php endforeach; ?>
               </select>
             </td>
-            <td style="font-size:12px;color:var(--muted)"><?= htmlspecialchars($a['job_type']) ?></td>
-            <td style="font-size:13px"><?= htmlspecialchars($a['location'] ?: '—') ?></td>
+            <td class="hide-mobile" style="font-size:12px;color:var(--muted)"><?= htmlspecialchars($a['job_type']) ?></td>
+            <td class="hide-mobile" style="font-size:13px"><?= htmlspecialchars($a['location'] ?: '—') ?></td>
             <td style="font-size:12px;color:var(--muted)"><?= $a['applied_date'] ? date('M j, Y', strtotime($a['applied_date'])) : '—' ?></td>
-            <td style="font-size:12px">
+            <td class="hide-mobile" style="font-size:12px">
               <?php if ($a['salary_min']): ?>
                 <?= cf_currency((float)$a['salary_min'], true) ?><?= $a['salary_max'] ? '–'.cf_currency((float)$a['salary_max'],true) : '+' ?>
               <?php else: ?>—<?php endif; ?>
             </td>
-            <td style="font-size:12px;color:var(--muted)"><?= htmlspecialchars($a['recruiter_name'] ?: '—') ?></td>
+            <td class="hide-mobile" style="font-size:12px;color:var(--muted)"><?= htmlspecialchars($a['recruiter_name'] ?: '—') ?></td>
             <td style="text-align:right">
               <div style="display:flex;gap:6px;justify-content:flex-end">
                 <a href="?edit=<?= $a['id'] ?>" class="btn btn-secondary btn-sm" style="padding:5px 10px">
@@ -243,7 +243,7 @@ function statusBadge(string $s): string {
       <input type="hidden" name="_action" value="save">
       <input type="hidden" name="id" value="<?= $editApp['id'] ?? 0 ?>">
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="rg-2">
         <div style="grid-column:1/-1">
           <label class="cf-label">Company Name *</label>
           <input type="text" name="company" class="cf-input" required value="<?= htmlspecialchars($editApp['company'] ?? '') ?>" placeholder="e.g. Google, Meta, Airbnb">

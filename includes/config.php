@@ -22,7 +22,7 @@ define('SESSION_LIFETIME', 3600 * 24 * 7); // 7 days
 
 // ── App URL (no trailing slash) ───────────────────────────────
 // define('APP_URL', 'http://localhost/careerflow');
-define('APP_URL', '');
+define('APP_URL', '/careerflow'); // Adjust this to your actual URL path
 
 // ── Encryption key for API keys/passwords (change this!) ────
 define('APP_SECRET', 'your-unique-secret-key-change-this-in-production-min-32-chars');

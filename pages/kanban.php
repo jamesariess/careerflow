@@ -37,7 +37,7 @@ $colors = [
 ?>
 
 <div>
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 page-header">
     <div>
       <h1 style="font-size:22px;font-weight:700;color:#fff">Kanban Board</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px">Drag cards to update application status</p>
@@ -48,7 +48,7 @@ $colors = [
     </a>
   </div>
 
-  <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;align-items:flex-start">
+  <div class="kanban-board" style="display:flex;gap:12px;overflow-x:auto;padding-bottom:16px;align-items:flex-start;-webkit-overflow-scrolling:touch">
     <?php foreach ($statuses as $status):
       $col  = $grouped[$status];
       $cnt  = count($col);

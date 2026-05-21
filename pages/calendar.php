@@ -66,7 +66,7 @@ $apps  = DB::all("SELECT id,company,job_title FROM applications WHERE user_id=? 
 <?php endif; ?>
 
 <div style="max-width:1100px">
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-6 page-header">
     <div>
       <h1 style="font-size:22px;font-weight:700;color:#fff">Interview Calendar</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px">Schedule and track your interviews</p>
@@ -77,7 +77,7 @@ $apps  = DB::all("SELECT id,company,job_title FROM applications WHERE user_id=? 
     </button>
   </div>
 
-  <div style="display:grid;grid-template-columns:1fr 320px;gap:16px">
+  <div class="rg-31">
 
     <!-- Calendar grid -->
     <div class="card" style="padding:20px">

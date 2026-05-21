@@ -186,7 +186,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
 <div style="max-width:880px">
 
 <!-- Profile header -->
-<div class="ss" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:20px">
+<div class="ss page-header" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:20px">
   <div style="width:66px;height:66px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#9B5DE5);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;font-family:'Syne',sans-serif;flex-shrink:0">
     <?= strtoupper(mb_substr($dbUser['name'],0,1)) ?>
   </div>
@@ -224,7 +224,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
     <div class="ss">
       <h2>Basic Information</h2>
       <p class="sd">Used to personalize your experience and auto-fill cover letters with AI.</p>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="rg-2">
         <div><label class="cf-label">Display Name *</label><input type="text" name="name" class="cf-input" required value="<?= htmlspecialchars($dbUser['name']) ?>"></div>
         <div><label class="cf-label">Full Name (for cover letters)</label><input type="text" name="full_name" class="cf-input" value="<?= htmlspecialchars($dbUser['full_name']??'') ?>" placeholder="Juan dela Cruz"></div>
         <div><label class="cf-label">Phone</label><input type="text" name="phone" class="cf-input" value="<?= htmlspecialchars($dbUser['phone']??'') ?>" placeholder="+63 912 345 6789"></div>
@@ -268,7 +268,7 @@ $emailCount = (int)(DB::one('SELECT COUNT(*) AS n FROM gmail_emails WHERE user_i
       <input type="hidden" name="currency" id="selCurr" value="<?= htmlspecialchars($currCode) ?>">
 
       <input type="text" id="currSearch" oninput="filterCurr(this.value)" placeholder="🔍 Search currency (e.g. peso, dollar, euro)…" class="cf-input" style="margin-bottom:14px">
-      <div class="curr-grid" id="currGrid">
+      <div class="curr-grid" id="currGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
         <?php foreach($currencies as $code=>$ci): $sel=($currCode===$code); ?>
         <div class="curr-card <?= $sel?'selected':'' ?>" id="curr-<?= $code ?>" onclick="selCurrency('<?= $code ?>')" data-search="<?= strtolower($ci['name'].' '.$code) ?>">
           <div class="curr-sym"><?= htmlspecialchars($ci['symbol']) ?></div>

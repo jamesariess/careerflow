@@ -153,7 +153,7 @@ $hasProfile = !empty($dbUser['skills_summary']) || !empty($dbUser['job_title_pre
 <div style="max-width:1280px">
 
   <!-- ── Header ── -->
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px">
+  <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:22px">
     <div>
       <h1 style="font-size:22px;font-weight:700;color:#fff">Cover Letters</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px"><?= (int)($counts['total']??0) ?> letter<?= ($counts['total']??0)!=1?'s':'' ?> saved · <?= (int)($counts['ai']??0) ?> AI-generated</p>
@@ -175,7 +175,7 @@ $hasProfile = !empty($dbUser['skills_summary']) || !empty($dbUser['job_title_pre
   </div>
   <?php endif; ?>
 
-  <div style="display:grid;grid-template-columns:<?= $editCL ? '1fr 1fr' : '220px 1fr' ?>;gap:16px;align-items:start">
+  <div class="rg-sidebar">
 
     <!-- ── Left panel ── -->
     <div>
@@ -353,7 +353,7 @@ $hasProfile = !empty($dbUser['skills_summary']) || !empty($dbUser['job_title_pre
       </div>
       <?php endif; ?>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="rg-2">
         <div>
           <label class="cf-label">Company Name *</label>
           <input type="text" id="genCompany" class="cf-input" placeholder="Google, Meta, Airbnb…">
