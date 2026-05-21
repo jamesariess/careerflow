@@ -3,6 +3,38 @@ require_once '../components/layout.php';
 cf_layout_head('Calendar');
 cf_layout_sidebar('calendar');
 
+<style>
+@media (max-width: 768px) {
+  /* Force all modal form grids to single column */
+  .modal-box .rg-2,
+  .modal-box [style*="grid-template-columns:1fr 1fr"],
+  .modal-box [style*="grid-template-columns: 1fr 1fr"],
+  .modal-box [style*="grid-template-columns:1fr 2fr"],
+  .modal-box [style*="grid-template-columns:2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-box [style*="grid-column:1/-1"] {
+    grid-column: 1 !important;
+  }
+  /* Inputs inside modal — prevent iOS zoom */
+  .modal-box input, .modal-box select, .modal-box textarea {
+    font-size: 16px !important;
+  }
+  /* Modal action buttons — full width stack */
+  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
+  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .modal-box [style*="justify-content:flex-end"] .btn,
+  .modal-box [style*="justify-content: flex-end"] .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+</style>
+
+
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';
 
@@ -71,7 +103,7 @@ $apps  = DB::all("SELECT id,company,job_title FROM applications WHERE user_id=? 
       <h1 style="font-size:22px;font-weight:700;color:#fff">Interview Calendar</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px">Schedule and track your interviews</p>
     </div>
-    <button onclick="document.getElementById('ivModal').classList.add('open')" class="btn btn-primary btn-sm">
+    <button onclick="openModal('ivModal')" class="btn btn-primary btn-sm">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
       Schedule Interview
     </button>
@@ -166,7 +198,7 @@ $apps  = DB::all("SELECT id,company,job_title FROM applications WHERE user_id=? 
   <div class="modal-box" style="max-width:520px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Schedule Interview</h2>
-      <button onclick="document.getElementById('ivModal').classList.remove('open')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer">×</button>
+      <button onclick="closeModal('ivModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer">×</button>
     </div>
     <form method="POST">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
@@ -215,7 +247,7 @@ $apps  = DB::all("SELECT id,company,job_title FROM applications WHERE user_id=? 
         </div>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
-        <button type="button" onclick="document.getElementById('ivModal').classList.remove('open')" class="btn btn-secondary">Cancel</button>
+        <button type="button" onclick="closeModal('ivModal')" class="btn btn-secondary">Cancel</button>
         <button type="submit" class="btn btn-primary">Schedule</button>
       </div>
     </form>

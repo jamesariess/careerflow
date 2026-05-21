@@ -400,27 +400,48 @@ select.cf-input option { background: #1a1a28; }
 /* ── Modal ───────────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,.7); backdrop-filter: blur(6px);
+  background: rgba(0,0,0,.75); backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
-  z-index: 200; opacity: 0; pointer-events: none;
-  transition: opacity .25s;
+  z-index: 500;                /* above FAB(59), bottom-nav(60), topbar(40) */
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s ease;
+  padding: 20px;
 }
 .modal-overlay.open { opacity: 1; pointer-events: auto; }
 .modal-box {
-  background: #171724; border: 1px solid var(--border);
-  border-radius: 18px; padding: 30px;
-  width: 100%; max-width: 620px;
-  max-height: 92vh; overflow-y: auto;
-  transform: scale(.94) translateY(10px);
+  background: #171724;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  width: 100%; max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  transform: scale(.95) translateY(16px);
   transition: transform .28s cubic-bezier(.34,1.56,.64,1);
+  position: relative;
 }
 .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+/* Scrollbar inside modal */
+.modal-box::-webkit-scrollbar { width: 4px; }
+.modal-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
 
 /* ── Toast ───────────────────────────────────────────────────── */
 #toast-container {
   position: fixed; bottom: 24px; right: 24px;
   z-index: 9999; display: flex; flex-direction: column; gap: 8px;
   pointer-events: none;
+}
+@media (max-width: 768px) {
+  #toast-container {
+    bottom: 76px;   /* above bottom nav (64px) */
+    right: 12px;
+    left: 12px;
+    align-items: stretch;
+  }
+  .toast { min-width: 0; width: 100%; }
 }
 .toast {
   display: flex; align-items: center; gap: 10px;
@@ -605,21 +626,47 @@ select.cf-input option { background: #1a1a28; }
   .stat-card { padding: 14px 16px; }
   .stat-card > div:first-child span { font-size: 9px; }
 
-  /* Modal: full-screen on phone */
+  /* ── Modal: full bottom sheet on phone ── */
+  .modal-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+    z-index: 500 !important;
+  }
   .modal-box {
     max-width: 100% !important;
     width: 100% !important;
     margin: 0 !important;
     border-radius: 20px 20px 0 0 !important;
-    max-height: 92vh !important;
-    padding: 20px 18px !important;
-  }
-  .modal-overlay {
-    align-items: flex-end !important;
-    padding: 0 !important;
+    max-height: 90vh !important;
+    padding: 20px 16px !important;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
+    transform: translateY(100%) !important;  /* starts off-screen below */
+    transition: transform .32s cubic-bezier(.4,0,.2,1) !important;
   }
   .modal-overlay.open .modal-box {
-    transform: scale(1) translateY(0) !important;
+    transform: translateY(0) !important;    /* slides up into view */
+  }
+  /* Drag handle indicator */
+  .modal-box::before {
+    content: '';
+    display: block;
+    width: 40px; height: 4px;
+    background: rgba(255,255,255,.15);
+    border-radius: 4px;
+    margin: 0 auto 18px;
+  }
+  /* Modal grid forms: single column on mobile */
+  .modal-box .rg-2,
+  .modal-box [style*="grid-template-columns:1fr 1fr"],
+  .modal-box [style*="grid-template-columns: 1fr 1fr"],
+  .modal-box [style*="grid-template-columns:1fr 2fr"],
+  .modal-box [style*="grid-template-columns:2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  /* Hide FAB + bottom nav when modal is open */
+  body.modal-open #cf-fab,
+  body.modal-open #cf-bottom-nav {
+    display: none !important;
   }
 
   /* Forms: inputs full-width */
@@ -712,7 +759,7 @@ function cf_layout_sidebar(string $active = ''): void {
         'resumes'      => ['icon'=>'file-text', 'label'=>'Resumes'],
         'analytics'    => ['icon'=>'bar-chart', 'label'=>'Analytics'],
         'gmail'        => ['icon'=>'mail',      'label'=>'Gmail Inbox'],
-        'cover_letters' => ['icon'=>'pen',       'label'=>'Cover Letters'],
+        'cover_letter' => ['icon'=>'pen',       'label'=>'Cover Letters'],
         'notes'        => ['icon'=>'edit',      'label'=>'Notes'],
         'settings'     => ['icon'=>'settings',  'label'=>'Settings'],
     ];
@@ -904,9 +951,58 @@ function cf_layout_sidebar(string $active = ''): void {
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {
             closeSidebar();
-            // Also close modals
-            document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+            closeAllModals();
         }
+    });
+
+    // ── Modal open/close helpers ──────────────────────────────────
+    function openModal(id) {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.add('open');
+        document.body.classList.add('modal-open');
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.remove('open');
+        if (!document.querySelector('.modal-overlay.open')) {
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+        }
+    }
+    function closeAllModals() {
+        document.querySelectorAll('.modal-overlay.open').forEach(m => {
+            m.classList.remove('open');
+        });
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+    }
+
+    // Auto-wire: clicking overlay background closes modal
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-overlay') && e.target.classList.contains('open')) {
+            e.target.classList.remove('open');
+            if (!document.querySelector('.modal-overlay.open')) {
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+            }
+        }
+    });
+
+    // Auto-track modal open state for CSS body class
+    // MutationObserver watches all .modal-overlay for class changes
+    const _modalObs = new MutationObserver(() => {
+        const anyOpen = !!document.querySelector('.modal-overlay.open');
+        document.body.classList.toggle('modal-open', anyOpen);
+        if (!anyOpen) document.body.style.overflow = '';
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.modal-overlay').forEach(m => {
+            _modalObs.observe(m, { attributes: true, attributeFilter: ['class'] });
+        });
     });
 
     // ── Progress bar engine ───────────────────────────────────────

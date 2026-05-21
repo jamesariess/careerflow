@@ -100,6 +100,20 @@ $openModal = isset($_GET['new']) || $editApp;
 cf_layout_head('Applications');
 cf_layout_sidebar('applications');
 
+<style>
+/* ── Applications modal: mobile form fix ── */
+@media (max-width: 768px) {
+  #appModal .modal-box { padding: 16px 14px !important; }
+  #appModal .rg-2 { grid-template-columns: 1fr !important; }
+  #appModal [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  #appModal [style*="grid-column:1/-1"] { grid-column: 1 !important; }
+  #appModal textarea { min-height: 80px; }
+  /* salary row side by side even on mobile */
+  #appModal .salary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+</style>
+
+
 function statusBadge(string $s): string {
     $cls = [
         'Wishlist' => 'wishlist', 'Applied' => 'applied', 'Screening' => 'screening',
@@ -128,7 +142,7 @@ function statusBadge(string $s): string {
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Export CSV
       </a>
-      <button onclick="openModal()" class="btn btn-primary btn-sm">
+      <button onclick="openModal('appModal')" class="btn btn-primary btn-sm">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
         Add Application
       </button>
@@ -181,7 +195,7 @@ function statusBadge(string $s): string {
         <tbody>
           <?php if (empty($apps)): ?>
           <tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">
-            No applications yet. <a onclick="openModal()" href="#" style="color:var(--accent)">Add your first one →</a>
+            No applications yet. <a onclick="openModal('appModal')" href="#" style="color:var(--accent)">Add your first one →</a>
           </td></tr>
           <?php else: foreach ($apps as $a): ?>
           <tr>
@@ -236,7 +250,7 @@ function statusBadge(string $s): string {
   <div class="modal-box" style="max-width:680px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
       <h2 style="font-size:18px;font-weight:700;color:#fff" id="modalTitle"><?= $editApp ? 'Edit Application' : 'New Application' ?></h2>
-      <button onclick="closeModal()" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
+      <button onclick="closeAppModal()" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
     </div>
     <form method="POST">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
@@ -318,7 +332,7 @@ function statusBadge(string $s): string {
       </div>
 
       <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)">
-        <button type="button" onclick="closeModal()" class="btn btn-secondary">Cancel</button>
+        <button type="button" onclick="closeAppModal()" class="btn btn-secondary">Cancel</button>
         <button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label"><?= $editApp ? 'Save Changes' : 'Add Application' ?></span></button>
       </div>
     </form>
@@ -326,8 +340,8 @@ function statusBadge(string $s): string {
 </div>
 
 <script>
-function openModal(){ document.getElementById('appModal').classList.add('open'); }
-function closeModal(){ document.getElementById('appModal').classList.remove('open'); history.replaceState(null,'','applications.php'); }
+function openModal(){ openModal('appModal'); }
+function closeAppModal(){ closeModal('appModal'); history.replaceState(null,'','applications.php'); }
 
 async function quickStatus(id, status) {
   const fd = new FormData();

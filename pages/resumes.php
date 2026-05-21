@@ -3,6 +3,38 @@ require_once '../components/layout.php';
 cf_layout_head('Resumes');
 cf_layout_sidebar('resumes');
 
+<style>
+@media (max-width: 768px) {
+  /* Force all modal form grids to single column */
+  .modal-box .rg-2,
+  .modal-box [style*="grid-template-columns:1fr 1fr"],
+  .modal-box [style*="grid-template-columns: 1fr 1fr"],
+  .modal-box [style*="grid-template-columns:1fr 2fr"],
+  .modal-box [style*="grid-template-columns:2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-box [style*="grid-column:1/-1"] {
+    grid-column: 1 !important;
+  }
+  /* Inputs inside modal — prevent iOS zoom */
+  .modal-box input, .modal-box select, .modal-box textarea {
+    font-size: 16px !important;
+  }
+  /* Modal action buttons — full width stack */
+  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
+  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .modal-box [style*="justify-content:flex-end"] .btn,
+  .modal-box [style*="justify-content: flex-end"] .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+</style>
+
+
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';
 
@@ -68,7 +100,7 @@ $resumes = DB::all('SELECT * FROM resumes WHERE user_id=? ORDER BY created_at DE
       <h1 style="font-size:22px;font-weight:700;color:#fff">Resumes</h1>
       <p style="color:var(--muted);font-size:13px;margin-top:2px">Manage and version your resumes</p>
     </div>
-    <button onclick="document.getElementById('uploadModal').classList.add('open')" class="btn btn-primary btn-sm">
+    <button onclick="openModal('uploadModal')" class="btn btn-primary btn-sm">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
       Upload Resume
     </button>
@@ -79,7 +111,7 @@ $resumes = DB::all('SELECT * FROM resumes WHERE user_id=? ORDER BY created_at DE
     <div style="font-size:40px;margin-bottom:12px">📄</div>
     <h3 style="color:#fff;font-size:17px;font-weight:600;margin-bottom:8px">No resumes yet</h3>
     <p style="color:var(--muted);font-size:14px;margin-bottom:20px">Upload your first resume to attach it to job applications.</p>
-    <button onclick="document.getElementById('uploadModal').classList.add('open')" class="btn btn-primary">Upload Resume</button>
+    <button onclick="openModal('uploadModal')" class="btn btn-primary">Upload Resume</button>
   </div>
   <?php else: ?>
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px">
@@ -132,7 +164,7 @@ $resumes = DB::all('SELECT * FROM resumes WHERE user_id=? ORDER BY created_at DE
   <div class="modal-box" style="max-width:460px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Upload Resume</h2>
-      <button onclick="document.getElementById('uploadModal').classList.remove('open')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer">×</button>
+      <button onclick="closeModal('uploadModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer">×</button>
     </div>
     <form method="POST" enctype="multipart/form-data">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
@@ -146,7 +178,7 @@ $resumes = DB::all('SELECT * FROM resumes WHERE user_id=? ORDER BY created_at DE
         <input type="file" name="resume" accept=".pdf,.doc,.docx" class="cf-input" required style="padding:8px">
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button type="button" onclick="document.getElementById('uploadModal').classList.remove('open')" class="btn btn-secondary">Cancel</button>
+        <button type="button" onclick="closeModal('uploadModal')" class="btn btn-secondary">Cancel</button>
         <button type="submit" class="btn btn-primary">Upload</button>
       </div>
     </form>

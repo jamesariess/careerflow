@@ -4,6 +4,38 @@ require_once '../includes/ai.php';
 cf_layout_head('Cover Letters');
 cf_layout_sidebar('cover_letter');
 
+<style>
+@media (max-width: 768px) {
+  /* Force all modal form grids to single column */
+  .modal-box .rg-2,
+  .modal-box [style*="grid-template-columns:1fr 1fr"],
+  .modal-box [style*="grid-template-columns: 1fr 1fr"],
+  .modal-box [style*="grid-template-columns:1fr 2fr"],
+  .modal-box [style*="grid-template-columns:2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-box [style*="grid-column:1/-1"] {
+    grid-column: 1 !important;
+  }
+  /* Inputs inside modal — prevent iOS zoom */
+  .modal-box input, .modal-box select, .modal-box textarea {
+    font-size: 16px !important;
+  }
+  /* Modal action buttons — full width stack */
+  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
+  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .modal-box [style*="justify-content:flex-end"] .btn,
+  .modal-box [style*="justify-content: flex-end"] .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+</style>
+
+
 $uid    = (int)$user['id'];
 $dbUser = DB::one('SELECT * FROM users WHERE id=?', [$uid]);
 $msg    = ''; $msgType = '';
@@ -330,7 +362,7 @@ $hasProfile = !empty($dbUser['skills_summary']) || !empty($dbUser['job_title_pre
         <h2 style="font-size:18px;font-weight:700;color:#fff">✨ Generate Cover Letter</h2>
         <p style="font-size:12px;color:var(--muted);margin-top:2px">AI will write a tailored letter using your profile + job details</p>
       </div>
-      <button onclick="document.getElementById('genModal').classList.remove('open')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
+      <button onclick="closeModal('genModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
     </div>
 
     <?php if (!$hasAI): ?>
@@ -400,7 +432,7 @@ $hasProfile = !empty($dbUser['skills_summary']) || !empty($dbUser['job_title_pre
     </div>
 
     <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
-      <button type="button" onclick="document.getElementById('genModal').classList.remove('open')" class="btn btn-secondary">Close</button>
+      <button type="button" onclick="closeModal('genModal')" class="btn btn-secondary">Close</button>
       <button type="button" onclick="generateCL()" class="btn btn-primary" id="generateBtn" <?= !$hasAI?'disabled':'' ?>>
         ✨ Generate Letter
       </button>
@@ -409,7 +441,7 @@ $hasProfile = !empty($dbUser['skills_summary']) || !empty($dbUser['job_title_pre
 </div>
 
 <!-- Loading overlay -->
-<div id="loadingOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+<div id="loadingOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px;display:none">
   <div style="width:48px;height:48px;border-radius:50%;border:3px solid rgba(108,99,255,.3);border-top-color:var(--accent);animation:spin 1s linear infinite"></div>
   <p style="color:#fff;font-size:15px;font-weight:600">✨ AI is writing your cover letter…</p>
   <p style="color:var(--muted);font-size:13px">This takes 10–30 seconds</p>
@@ -421,7 +453,7 @@ const CSRF = <?= json_encode(csrf_token()) ?>;
 let genResultId = null;
 
 function openGenerator() {
-  document.getElementById('genModal').classList.add('open');
+  openModal('genModal');
   document.getElementById('genResult').style.display = 'none';
 }
 

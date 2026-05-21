@@ -3,6 +3,38 @@ require_once '../components/layout.php';
 cf_layout_head('Notes');
 cf_layout_sidebar('notes');
 
+<style>
+@media (max-width: 768px) {
+  /* Force all modal form grids to single column */
+  .modal-box .rg-2,
+  .modal-box [style*="grid-template-columns:1fr 1fr"],
+  .modal-box [style*="grid-template-columns: 1fr 1fr"],
+  .modal-box [style*="grid-template-columns:1fr 2fr"],
+  .modal-box [style*="grid-template-columns:2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-box [style*="grid-column:1/-1"] {
+    grid-column: 1 !important;
+  }
+  /* Inputs inside modal — prevent iOS zoom */
+  .modal-box input, .modal-box select, .modal-box textarea {
+    font-size: 16px !important;
+  }
+  /* Modal action buttons — full width stack */
+  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
+  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .modal-box [style*="justify-content:flex-end"] .btn,
+  .modal-box [style*="justify-content: flex-end"] .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+</style>
+
+
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';
 
@@ -111,11 +143,11 @@ $typeBg = [
       <p style="color:var(--muted);font-size:13px;margin-top:2px"><?= count($notes) ?> note<?= count($notes) !== 1 ? 's' : '' ?></p>
     </div>
     <div style="display:flex;gap:8px">
-      <button onclick="document.getElementById('reminderModal').classList.add('open')" class="btn btn-secondary btn-sm">
+      <button onclick="openModal('reminderModal')" class="btn btn-secondary btn-sm">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Set Reminder
       </button>
-      <button onclick="document.getElementById('addNoteModal').classList.add('open')" class="btn btn-primary btn-sm">
+      <button onclick="openModal('addNoteModal')" class="btn btn-primary btn-sm">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg>
         Add Note
       </button>
@@ -153,7 +185,7 @@ $typeBg = [
         <div style="font-size:36px;margin-bottom:12px">📝</div>
         <h3 style="color:#fff;font-size:16px;font-weight:600;margin-bottom:6px">No notes yet</h3>
         <p style="color:var(--muted);font-size:13px;margin-bottom:18px">Track recruiter conversations, follow-ups, and feedback.</p>
-        <button onclick="document.getElementById('addNoteModal').classList.add('open')" class="btn btn-primary btn-sm">Add First Note</button>
+        <button onclick="openModal('addNoteModal')" class="btn btn-primary btn-sm">Add First Note</button>
       </div>
       <?php else: foreach ($notes as $n):
         $bg = $typeBg[$n['note_type']] ?? 'rgba(108,99,255,.15)';
@@ -208,7 +240,7 @@ $typeBg = [
       <div class="card" style="overflow:hidden">
         <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
           <h3 style="font-size:13px;font-weight:700;color:#fff">Upcoming Reminders</h3>
-          <button onclick="document.getElementById('reminderModal').classList.add('open')" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer">+ Add</button>
+          <button onclick="openModal('reminderModal')" style="font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer">+ Add</button>
         </div>
         <?php if (empty($reminders)): ?>
         <p style="padding:18px;font-size:12px;color:var(--muted);text-align:center">No reminders set</p>
@@ -269,7 +301,7 @@ $typeBg = [
   <div class="modal-box" style="max-width:500px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Add Note</h2>
-      <button onclick="document.getElementById('addNoteModal').classList.remove('open')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
+      <button onclick="closeModal('addNoteModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
     </div>
     <form method="POST">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
@@ -294,7 +326,7 @@ $typeBg = [
         <textarea name="content" class="cf-input" rows="4" required placeholder="Write your note, follow-up, or recruiter update…"></textarea>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button type="button" onclick="document.getElementById('addNoteModal').classList.remove('open')" class="btn btn-secondary">Cancel</button>
+        <button type="button" onclick="closeModal('addNoteModal')" class="btn btn-secondary">Cancel</button>
         <button type="submit" class="btn btn-primary">Add Note</button>
       </div>
     </form>
@@ -306,7 +338,7 @@ $typeBg = [
   <div class="modal-box" style="max-width:440px">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Set Reminder</h2>
-      <button onclick="document.getElementById('reminderModal').classList.remove('open')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
+      <button onclick="closeModal('reminderModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
     </div>
     <form method="POST">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
@@ -329,7 +361,7 @@ $typeBg = [
         </select>
       </div>
       <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button type="button" onclick="document.getElementById('reminderModal').classList.remove('open')" class="btn btn-secondary">Cancel</button>
+        <button type="button" onclick="closeModal('reminderModal')" class="btn btn-secondary">Cancel</button>
         <button type="submit" class="btn btn-primary">Set Reminder</button>
       </div>
     </form>
