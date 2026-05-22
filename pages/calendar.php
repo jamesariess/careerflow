@@ -196,11 +196,12 @@ $apps  = DB::all("SELECT id,company,job_title FROM applications WHERE user_id=? 
 <!-- Schedule Modal -->
 <div class="modal-overlay" id="ivModal">
   <div class="modal-box" style="max-width:520px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div class="cf-modal-header">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Schedule Interview</h2>
-      <button onclick="closeModal('ivModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer">×</button>
+      <button onclick="closeModal('ivModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center">×</button>
     </div>
-    <form method="POST">
+    <div class="cf-modal-body">
+    <form method="POST" id="ivForm">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
       <input type="hidden" name="_action" value="save_interview">
       <div style="display:grid;gap:12px">
@@ -246,11 +247,12 @@ $apps  = DB::all("SELECT id,company,job_title FROM applications WHERE user_id=? 
           <textarea name="notes" class="cf-input" rows="2" placeholder="Prep notes, topics to cover…"></textarea>
         </div>
       </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
-        <button type="button" onclick="closeModal('ivModal')" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary">Schedule</button>
-      </div>
     </form>
+    </div><!-- /cf-modal-body -->
+    <div class="cf-modal-footer">
+      <button type="button" onclick="closeModal('ivModal')" class="btn btn-secondary">Cancel</button>
+      <button type="submit" form="ivForm" class="btn btn-primary">Schedule</button>
+    </div>
   </div>
 </div>
 

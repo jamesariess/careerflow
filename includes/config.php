@@ -10,10 +10,17 @@ define('CF_UPLOAD_MAX_MB', 5);
 
 // ── Database ─────────────────────────────────────────────────
 // ── Database ─────────────────────────────────────────────────
-define('DB_HOST', 'sql12.freesqldatabase.com');
-define('DB_NAME', 'sql12827824'); // put your full database name
-define('DB_USER', 'sql12827824');
-define('DB_PASS', 'FCqdnkyyc2');
+// define('DB_HOST', 'sql12.freesqldatabase.com');
+// define('DB_NAME', 'sql12827824'); // put your full database name
+// define('DB_USER', 'sql12827824');
+// define('DB_PASS', 'FCqdnkyyc2');
+// define('DB_CHARSET', 'utf8mb4');
+
+
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'careerflow');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_CHARSET', 'utf8mb4');
 
 // ── Session ───────────────────────────────────────────────────

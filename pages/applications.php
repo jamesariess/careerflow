@@ -99,10 +99,21 @@ $openModal = isset($_GET['new']) || $editApp;
 
 cf_layout_head('Applications');
 cf_layout_sidebar('applications');
+?>
+<style>
+/* ── Applications modal: mobile form fix ── */
+@media (max-width: 768px) {
+  #appModal .modal-box { padding: 16px 14px !important; }
+  #appModal .rg-2 { grid-template-columns: 1fr !important; }
+  #appModal [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  #appModal [style*="grid-column:1/-1"] { grid-column: 1 !important; }
+  #appModal textarea { min-height: 80px; }
+  /* salary row side by side even on mobile */
+  #appModal .salary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+}
+</style>
 
-
-
-
+<?php
 function statusBadge(string $s): string {
     $cls = [
         'Wishlist' => 'wishlist', 'Applied' => 'applied', 'Screening' => 'screening',
@@ -118,18 +129,7 @@ function statusBadge(string $s): string {
 <?php if ($msg): ?>
 <script>document.addEventListener('DOMContentLoaded',()=>showToast('<?= addslashes($msg) ?>','<?= $msgType ?>'));</script>
 <?php endif; ?>
-<style>
-/* ── Applications modal: mobile form fix ── */
-@media (max-width: 768px) {
-  #appModal .modal-box { padding: 16px 14px !important; }
-  #appModal .rg-2 { grid-template-columns: 1fr !important; }
-  #appModal [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
-  #appModal [style*="grid-column:1/-1"] { grid-column: 1 !important; }
-  #appModal textarea { min-height: 80px; }
-  /* salary row side by side even on mobile */
-  #appModal .salary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-}
-</style>
+
 <div style="max-width:1280px">
   <!-- Header -->
   <div class="flex items-center justify-between mb-6 page-header">
@@ -248,23 +248,26 @@ function statusBadge(string $s): string {
 <!-- ── Add/Edit Modal ──────────────────────── -->
 <div class="modal-overlay <?= $openModal ? 'open' : '' ?>" id="appModal">
   <div class="modal-box" style="max-width:680px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px">
-      <h2 style="font-size:18px;font-weight:700;color:#fff" id="modalTitle"><?= $editApp ? 'Edit Application' : 'New Application' ?></h2>
-      <button onclick="closeAppModal()" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
+    <!-- Sticky header -->
+    <div class="cf-modal-header">
+      <h2 style="font-size:17px;font-weight:700;color:#fff" id="modalTitle"><?= $editApp ? 'Edit Application' : 'New Application' ?></h2>
+      <button onclick="closeAppModal()" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0">×</button>
     </div>
-    <form method="POST">
+    <!-- Scrollable body -->
+    <div class="cf-modal-body">
+    <form method="POST" id="appForm">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
       <input type="hidden" name="_action" value="save">
       <input type="hidden" name="id" value="<?= $editApp['id'] ?? 0 ?>">
 
-      <div class="rg-2">
+      <div class="rg-2" style="gap:12px">
         <div style="grid-column:1/-1">
           <label class="cf-label">Company Name *</label>
-          <input type="text" name="company" class="cf-input" required value="<?= htmlspecialchars($editApp['company'] ?? '') ?>" placeholder="e.g. Google, Meta, Airbnb">
+          <input type="text" name="company" class="cf-input" required value="<?= htmlspecialchars($editApp['company'] ?? '') ?>" placeholder="Google, Meta, Airbnb…" autocomplete="organization">
         </div>
         <div style="grid-column:1/-1">
           <label class="cf-label">Job Title *</label>
-          <input type="text" name="job_title" class="cf-input" required value="<?= htmlspecialchars($editApp['job_title'] ?? '') ?>" placeholder="e.g. Senior Product Designer">
+          <input type="text" name="job_title" class="cf-input" required value="<?= htmlspecialchars($editApp['job_title'] ?? '') ?>" placeholder="Senior Product Designer" autocomplete="off">
         </div>
         <div>
           <label class="cf-label">Status</label>
@@ -284,7 +287,7 @@ function statusBadge(string $s): string {
         </div>
         <div>
           <label class="cf-label">Location</label>
-          <input type="text" name="location" class="cf-input" value="<?= htmlspecialchars($editApp['location'] ?? '') ?>" placeholder="San Francisco, CA">
+          <input type="text" name="location" class="cf-input" value="<?= htmlspecialchars($editApp['location'] ?? '') ?>" placeholder="Remote / City, Country" autocomplete="off">
         </div>
         <div>
           <label class="cf-label">Applied Date</label>
@@ -292,11 +295,11 @@ function statusBadge(string $s): string {
         </div>
         <div>
           <label class="cf-label">Min Salary</label>
-          <input type="number" name="salary_min" class="cf-input" value="<?= $editApp['salary_min'] ?? '' ?>" placeholder="80000">
+          <input type="number" name="salary_min" class="cf-input" value="<?= $editApp['salary_min'] ?? '' ?>" placeholder="80000" inputmode="numeric">
         </div>
         <div>
           <label class="cf-label">Max Salary</label>
-          <input type="number" name="salary_max" class="cf-input" value="<?= $editApp['salary_max'] ?? '' ?>" placeholder="120000">
+          <input type="number" name="salary_max" class="cf-input" value="<?= $editApp['salary_max'] ?? '' ?>" placeholder="120000" inputmode="numeric">
         </div>
         <div>
           <label class="cf-label">Recruiter Name</label>
@@ -304,11 +307,11 @@ function statusBadge(string $s): string {
         </div>
         <div>
           <label class="cf-label">Recruiter Email</label>
-          <input type="email" name="recruiter_email" class="cf-input" value="<?= htmlspecialchars($editApp['recruiter_email'] ?? '') ?>" placeholder="recruiter@company.com">
+          <input type="email" name="recruiter_email" class="cf-input" value="<?= htmlspecialchars($editApp['recruiter_email'] ?? '') ?>" placeholder="jane@company.com" inputmode="email" autocomplete="email">
         </div>
         <div style="grid-column:1/-1">
           <label class="cf-label">Job URL</label>
-          <input type="url" name="job_url" class="cf-input" value="<?= htmlspecialchars($editApp['job_url'] ?? '') ?>" placeholder="https://careers.company.com/job-id">
+          <input type="url" name="job_url" class="cf-input" value="<?= htmlspecialchars($editApp['job_url'] ?? '') ?>" placeholder="https://…" inputmode="url">
         </div>
         <?php if (!empty($resumes)): ?>
         <div style="grid-column:1/-1">
@@ -322,20 +325,22 @@ function statusBadge(string $s): string {
         </div>
         <?php endif; ?>
         <div style="grid-column:1/-1">
-          <label class="cf-label">Job Description</label>
-          <textarea name="job_description" class="cf-input" rows="3" placeholder="Paste job description here…"><?= htmlspecialchars($editApp['job_description'] ?? '') ?></textarea>
+          <label class="cf-label">Job Description <span style="color:var(--muted);font-size:10px;text-transform:none">(optional)</span></label>
+          <textarea name="job_description" class="cf-input" rows="2" placeholder="Paste job description…"><?= htmlspecialchars($editApp['job_description'] ?? '') ?></textarea>
         </div>
         <div style="grid-column:1/-1">
-          <label class="cf-label">Notes</label>
-          <textarea name="notes" class="cf-input" rows="2" placeholder="Your personal notes about this role…"><?= htmlspecialchars($editApp['notes'] ?? '') ?></textarea>
+          <label class="cf-label">Personal Notes</label>
+          <textarea name="notes" class="cf-input" rows="2" placeholder="Your notes about this role…"><?= htmlspecialchars($editApp['notes'] ?? '') ?></textarea>
         </div>
       </div>
-
-      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)">
-        <button type="button" onclick="closeAppModal()" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label"><?= $editApp ? 'Save Changes' : 'Add Application' ?></span></button>
-      </div>
     </form>
+    </div><!-- /cf-modal-body -->
+
+    <!-- Sticky footer -->
+    <div class="cf-modal-footer">
+      <button type="button" onclick="closeAppModal()" class="btn btn-secondary">Cancel</button>
+      <button type="submit" form="appForm" class="btn btn-primary" onclick="cfBtnLoad(this,true)"><span class="btn-label"><?= $editApp ? 'Save Changes' : 'Add Application' ?></span></button>
+    </div>
   </div>
 </div>
 

@@ -2,8 +2,38 @@
 require_once '../components/layout.php';
 cf_layout_head('Notes');
 cf_layout_sidebar('notes');
-
-
+?>
+<style>
+@media (max-width: 768px) {
+  /* Force all modal form grids to single column */
+  .modal-box .rg-2,
+  .modal-box [style*="grid-template-columns:1fr 1fr"],
+  .modal-box [style*="grid-template-columns: 1fr 1fr"],
+  .modal-box [style*="grid-template-columns:1fr 2fr"],
+  .modal-box [style*="grid-template-columns:2fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .modal-box [style*="grid-column:1/-1"] {
+    grid-column: 1 !important;
+  }
+  /* Inputs inside modal — prevent iOS zoom */
+  .modal-box input, .modal-box select, .modal-box textarea {
+    font-size: 16px !important;
+  }
+  /* Modal action buttons — full width stack */
+  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
+  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .modal-box [style*="justify-content:flex-end"] .btn,
+  .modal-box [style*="justify-content: flex-end"] .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+</style>
+<?php
 
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';
@@ -103,36 +133,6 @@ $typeBg = [
 <?php if ($msg): ?>
 <script>document.addEventListener('DOMContentLoaded',()=>showToast('<?= addslashes($msg) ?>','<?= $msgType ?>'));</script>
 <?php endif; ?>
-<style>
-@media (max-width: 768px) {
-  /* Force all modal form grids to single column */
-  .modal-box .rg-2,
-  .modal-box [style*="grid-template-columns:1fr 1fr"],
-  .modal-box [style*="grid-template-columns: 1fr 1fr"],
-  .modal-box [style*="grid-template-columns:1fr 2fr"],
-  .modal-box [style*="grid-template-columns:2fr 1fr"] {
-    grid-template-columns: 1fr !important;
-  }
-  .modal-box [style*="grid-column:1/-1"] {
-    grid-column: 1 !important;
-  }
-  /* Inputs inside modal — prevent iOS zoom */
-  .modal-box input, .modal-box select, .modal-box textarea {
-    font-size: 16px !important;
-  }
-  /* Modal action buttons — full width stack */
-  .modal-box [style*="justify-content:flex-end"][style*="display:flex"],
-  .modal-box [style*="justify-content: flex-end"][style*="display:flex"] {
-    flex-direction: column !important;
-    gap: 8px !important;
-  }
-  .modal-box [style*="justify-content:flex-end"] .btn,
-  .modal-box [style*="justify-content: flex-end"] .btn {
-    width: 100% !important;
-    justify-content: center !important;
-  }
-}
-</style>
 
 <div style="max-width:1100px">
 
@@ -299,10 +299,11 @@ $typeBg = [
 <!-- ── Add Note Modal ── -->
 <div class="modal-overlay" id="addNoteModal">
   <div class="modal-box" style="max-width:500px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div class="cf-modal-header">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Add Note</h2>
-      <button onclick="closeModal('addNoteModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
+      <button onclick="closeModal('addNoteModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center">×</button>
     </div>
+    <div class="cf-modal-body">
     <form method="POST">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
       <input type="hidden" name="_action" value="add_note">
@@ -325,21 +326,23 @@ $typeBg = [
         <label class="cf-label">Content</label>
         <textarea name="content" class="cf-input" rows="4" required placeholder="Write your note, follow-up, or recruiter update…"></textarea>
       </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button type="button" onclick="closeModal('addNoteModal')" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary">Add Note</button>
-      </div>
     </form>
+    </div>
+    <div class="cf-modal-footer">
+      <button type="button" onclick="closeModal('addNoteModal')" class="btn btn-secondary">Cancel</button>
+      <button type="submit" form="addNoteForm" class="btn btn-primary">Add Note</button>
+    </div>
   </div>
 </div>
 
 <!-- ── Reminder Modal ── -->
 <div class="modal-overlay" id="reminderModal">
   <div class="modal-box" style="max-width:440px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div class="cf-modal-header">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Set Reminder</h2>
-      <button onclick="closeModal('reminderModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:18px">×</button>
+      <button onclick="closeModal('reminderModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center">×</button>
     </div>
+    <div class="cf-modal-body">
     <form method="POST">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
       <input type="hidden" name="_action" value="add_reminder">
@@ -360,11 +363,12 @@ $typeBg = [
           <?php endforeach; ?>
         </select>
       </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button type="button" onclick="closeModal('reminderModal')" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary">Set Reminder</button>
-      </div>
     </form>
+    </div>
+    <div class="cf-modal-footer">
+      <button type="button" onclick="closeModal('reminderModal')" class="btn btn-secondary">Cancel</button>
+      <button type="submit" form="reminderForm" class="btn btn-primary">Set Reminder</button>
+    </div>
   </div>
 </div>
 

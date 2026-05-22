@@ -3,7 +3,6 @@ require_once '../components/layout.php';
 cf_layout_head('Resumes');
 cf_layout_sidebar('resumes');
 ?>
-
 <style>
 @media (max-width: 768px) {
   /* Force all modal form grids to single column */
@@ -163,11 +162,12 @@ $resumes = DB::all('SELECT * FROM resumes WHERE user_id=? ORDER BY created_at DE
 <!-- Upload Modal -->
 <div class="modal-overlay" id="uploadModal">
   <div class="modal-box" style="max-width:460px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+    <div class="cf-modal-header">
       <h2 style="font-size:17px;font-weight:700;color:#fff">Upload Resume</h2>
-      <button onclick="closeModal('uploadModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:7px;cursor:pointer">×</button>
+      <button onclick="closeModal('uploadModal')" style="background:rgba(255,255,255,.07);border:none;color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center">×</button>
     </div>
-    <form method="POST" enctype="multipart/form-data">
+    <div class="cf-modal-body">
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
       <input type="hidden" name="_csrf" value="<?= csrf_token() ?>">
       <input type="hidden" name="_action" value="upload">
       <div style="margin-bottom:14px">
@@ -178,11 +178,12 @@ $resumes = DB::all('SELECT * FROM resumes WHERE user_id=? ORDER BY created_at DE
         <label class="cf-label">File (PDF, DOC, DOCX – max <?= CF_UPLOAD_MAX_MB ?>MB)</label>
         <input type="file" name="resume" accept=".pdf,.doc,.docx" class="cf-input" required style="padding:8px">
       </div>
-      <div style="display:flex;gap:10px;justify-content:flex-end">
-        <button type="button" onclick="closeModal('uploadModal')" class="btn btn-secondary">Cancel</button>
-        <button type="submit" class="btn btn-primary">Upload</button>
-      </div>
     </form>
+    </div>
+    <div class="cf-modal-footer">
+      <button type="button" onclick="closeModal('uploadModal')" class="btn btn-secondary">Cancel</button>
+      <button type="submit" form="uploadForm" class="btn btn-primary">Upload</button>
+    </div>
   </div>
 </div>
 

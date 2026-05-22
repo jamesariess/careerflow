@@ -428,6 +428,25 @@ select.cf-input option { background: #1a1a28; }
 .modal-box::-webkit-scrollbar { width: 4px; }
 .modal-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
 
+/* ── Modal header/body/footer (structure classes) ─────────────── */
+/* Desktop: normal layout, no sticky behaviour needed */
+.cf-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; flex-shrink: 0;
+}
+.cf-modal-body {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.cf-modal-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 20px; padding-top: 18px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.cf-modal-footer .btn { min-width: 100px; justify-content: center; }
+
 /* ── Toast ───────────────────────────────────────────────────── */
 #toast-container {
   position: fixed; bottom: 24px; right: 24px;
