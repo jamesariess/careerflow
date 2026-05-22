@@ -10,10 +10,10 @@ define('CF_UPLOAD_MAX_MB', 5);
 
 // ── Database ─────────────────────────────────────────────────
 // ── Database ─────────────────────────────────────────────────
-define('DB_HOST', 'sql.freedb.tech');
-define('DB_NAME', 'freedb_XKQYArv0'); // put your full database name
-define('DB_USER', 'u_KlZNhp');
-define('DB_PASS', 'ujCtPPyUM27k');
+define('DB_HOST', 'sql12.freesqldatabase.com');
+define('DB_NAME', 'sql12827824'); // put your full database name
+define('DB_USER', 'sql12827824');
+define('DB_PASS', 'FCqdnkyyc2');
 define('DB_CHARSET', 'utf8mb4');
 
 // ── Session ───────────────────────────────────────────────────
