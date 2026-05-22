@@ -778,7 +778,7 @@ function cf_layout_sidebar(string $active = ''): void {
         'resumes'      => ['icon'=>'file-text', 'label'=>'Resumes'],
         'analytics'    => ['icon'=>'bar-chart', 'label'=>'Analytics'],
         'gmail'        => ['icon'=>'mail',      'label'=>'Gmail Inbox'],
-        'cover_letter' => ['icon'=>'pen',       'label'=>'Cover Letters'],
+        'cover_letters' => ['icon'=>'pen',       'label'=>'Cover Letters'],
         'notes'        => ['icon'=>'edit',      'label'=>'Notes'],
         'settings'     => ['icon'=>'settings',  'label'=>'Settings'],
     ];
