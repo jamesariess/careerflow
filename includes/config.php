@@ -10,10 +10,10 @@ define('CF_UPLOAD_MAX_MB', 5);
 
 // ── Database ─────────────────────────────────────────────────
 // ── Database ─────────────────────────────────────────────────
-define('DB_HOST', 'sql310.ezyro.com');
-define('DB_NAME', 'ezyro_41992991_careerflow'); // put your full database name
-define('DB_USER', 'ezyro_41992991');
-define('DB_PASS', 'd58c0a932d');
+define('DB_HOST', 'sql12.freesqldatabase.com');
+define('DB_NAME', 'sql12827889'); // put your full database name
+define('DB_USER', 'sql12827889');
+define('DB_PASS', 'XEViy4Edca');
 define('DB_CHARSET', 'utf8mb4');
 
 
