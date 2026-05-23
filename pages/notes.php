@@ -33,8 +33,8 @@ cf_layout_sidebar('notes');
   }
 }
 </style>
-<?php
 
+<?php
 $uid = (int)$user['id'];
 $msg = ''; $msgType = '';
 

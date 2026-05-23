@@ -103,17 +103,14 @@ cf_layout_sidebar('applications');
 <style>
 /* ── Applications modal: mobile form fix ── */
 @media (max-width: 768px) {
-  #appModal .modal-box { padding: 16px 14px !important; }
-  #appModal .rg-2 { grid-template-columns: 1fr !important; }
   #appModal [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
-  #appModal [style*="grid-column:1/-1"] { grid-column: 1 !important; }
   #appModal textarea { min-height: 80px; }
   /* salary row side by side even on mobile */
   #appModal .salary-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 }
 </style>
-
 <?php
+
 function statusBadge(string $s): string {
     $cls = [
         'Wishlist' => 'wishlist', 'Applied' => 'applied', 'Screening' => 'screening',
@@ -345,7 +342,7 @@ function statusBadge(string $s): string {
 </div>
 
 <script>
-function openModal(){ openModal('appModal'); }
+// openModal and closeModal are defined in layout.php
 function closeAppModal(){ closeModal('appModal'); history.replaceState(null,'','applications.php'); }
 
 async function quickStatus(id, status) {

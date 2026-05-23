@@ -645,42 +645,109 @@ select.cf-input option { background: #1a1a28; }
   .stat-card { padding: 14px 16px; }
   .stat-card > div:first-child span { font-size: 9px; }
 
-  /* ── Modal: full bottom sheet on phone ── */
+  /* ══════════════════════════════════════════
+     MOBILE MODAL — centered card, proper layout
+     ══════════════════════════════════════════ */
   .modal-overlay {
-    align-items: flex-end !important;
-    padding: 0 !important;
+    /* Center the modal on screen, not bottom sheet */
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px !important;
     z-index: 500 !important;
+    overflow-y: auto !important;
+    /* Start hidden, fade in */
+    opacity: 0;
+    pointer-events: none;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
   }
   .modal-box {
+    /* Proper card — not full screen, not bottom sheet */
+    width: calc(100vw - 24px) !important;
     max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-    border-radius: 20px 20px 0 0 !important;
-    max-height: 90vh !important;
-    padding: 20px 16px !important;
-    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px)) !important;
-    transform: translateY(100%) !important;  /* starts off-screen below */
-    transition: transform .32s cubic-bezier(.4,0,.2,1) !important;
+    max-height: calc(100vh - 24px) !important;
+    margin: auto !important;
+    border-radius: 16px !important;
+    /* No translateY — just scale in cleanly */
+    transform: scale(.92) !important;
+    transition: transform .22s cubic-bezier(.34,1.4,.64,1), opacity .2s !important;
+    opacity: 0;
+    /* CRITICAL: flex column so header/body/footer stack properly */
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
   .modal-overlay.open .modal-box {
-    transform: translateY(0) !important;    /* slides up into view */
+    transform: scale(1) !important;
+    opacity: 1;
   }
-  /* Drag handle indicator */
-  .modal-box::before {
-    content: '';
-    display: block;
-    width: 40px; height: 4px;
-    background: rgba(255,255,255,.15);
-    border-radius: 4px;
-    margin: 0 auto 18px;
+  /* Header: fixed height, never scrolls */
+  .cf-modal-header {
+    padding: 16px 16px 14px !important;
+    border-bottom: 1px solid var(--border) !important;
+    background: #1c1c2e !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 0 !important;
+    border-radius: 16px 16px 0 0 !important;
   }
-  /* Modal grid forms: single column on mobile */
-  .modal-box .rg-2,
-  .modal-box [style*="grid-template-columns:1fr 1fr"],
-  .modal-box [style*="grid-template-columns: 1fr 1fr"],
-  .modal-box [style*="grid-template-columns:1fr 2fr"],
-  .modal-box [style*="grid-template-columns:2fr 1fr"] {
-    grid-template-columns: 1fr !important;
+  .cf-modal-header h2 { font-size: 16px !important; }
+  /* Body: takes remaining space, scrolls independently */
+  .cf-modal-body {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding: 16px !important;
+    background: #171724 !important;
+  }
+  /* Footer: fixed height, never scrolls — ALWAYS VISIBLE */
+  .cf-modal-footer {
+    padding: 12px 16px !important;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
+    border-top: 1px solid var(--border) !important;
+    background: #1c1c2e !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    gap: 8px !important;
+    justify-content: stretch !important;
+    margin-top: 0 !important;
+    border-radius: 0 0 16px 16px !important;
+  }
+  .cf-modal-footer .btn {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+  }
+  /* No ::before handle (not a sheet) */
+  .modal-box::before { display: none !important; }
+  /* Form grids: 2 cols for short rows, full for long */
+  .modal-box .rg-2 {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  /* Full-width fields stay full width */
+  .modal-box [style*="grid-column:1/-1"],
+  .modal-box [style*="grid-column: 1 / -1"] {
+    grid-column: 1 / -1 !important;
+  }
+  /* Prevent iOS zoom on focus */
+  .modal-box .cf-input,
+  .modal-box input,
+  .modal-box select,
+  .modal-box textarea {
+    font-size: 16px !important;
+  }
+  /* Shorter textareas on mobile */
+  .modal-box textarea.cf-input {
+    min-height: 60px !important;
+    max-height: 90px !important;
+    rows: 2 !important;
   }
   /* Hide FAB + bottom nav when modal is open */
   body.modal-open #cf-fab,
